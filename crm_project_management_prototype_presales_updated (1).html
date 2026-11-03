@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A One Salasar CRM - Opportunity Pre-Sales + Project Management Prototype</title>
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --panel:#ffffff;
+      --text:#111111;
+      --muted:#6b7280;
+      --border:#d9dde3;
+      --soft:#eef1f4;
+      --accent:#111111;
+      --accent-soft:#dbeafe;
+      --blue:#dcecff;
+      --green:#dcfce7;
+      --yellow:#fef3c7;
+      --red:#fee2e2;
+      --shadow:0 1px 4px rgba(0,0,0,.07);
+      --radius:8px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      font-size:13px;
+    }
+
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+
+    .app{
+      display:grid;
+      grid-template-columns:230px 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      background:#fff;
+      border-right:1px solid var(--border);
+      position:fixed;
+      inset:0 auto 0 0;
+      width:230px;
+      overflow-y:auto;
+      z-index:40;
+    }
+
+    .brand{
+      height:56px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 16px;
+      border-bottom:1px solid var(--border);
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .brand-mark{
+      width:28px;
+      height:28px;
+      border:2px solid #111;
+      display:grid;
+      place-items:center;
+      border-radius:6px;
+      font-weight:800;
+    }
+
+    .nav-section{
+      padding:10px 10px 18px;
+    }
+
+    .nav-title{
+      color:var(--muted);
+      text-transform:uppercase;
+      font-size:10px;
+      letter-spacing:.08em;
+      margin:10px 8px 6px;
+    }
+
+    .nav-item,.nav-group-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 11px;
+      border-radius:6px;
+      color:#1f2937;
+      text-decoration:none;
+      margin:2px 0;
+      border:0;
+      width:100%;
+      background:transparent;
+      text-align:left;
+      font-weight:600;
+    }
+
+    .nav-item:hover,.nav-group-title:hover{background:#f0f2f5}
+    .nav-item.active,.nav-group-title.active{
+      background:#dbeafe;
+      color:#111;
+    }
+
+    .nav-group-title{
+      justify-content:space-between;
+    }
+
+    .nav-group-label{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .nav-sub{
+      margin-left:19px;
+      border-left:1px solid #d8dde3;
+      padding-left:8px;
+    }
+
+    .nav-sub .nav-item{
+      font-weight:500;
+      padding:8px 10px;
+    }
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:50px;
+      background:#fff;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      position:sticky;
+      top:0;
+      z-index:30;
+    }
+
+    .top-left,.top-right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .menu-btn{
+      width:32px;
+      height:32px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:5px;
+    }
+
+    .status-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#374151;
+    }
+
+    .status-select{
+      height:30px;
+      min-width:210px;
+      border:1px solid var(--border);
+      border-radius:5px;
+      background:#fff;
+      padding:0 9px;
+    }
+
+    .user-chip{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      font-weight:600;
+    }
+
+    .avatar{
+      width:28px;
+      height:28px;
+      background:#111;
+      color:white;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+    }
+
+    .content{
+      padding:16px;
+      max-width:1600px;
+      margin:0 auto;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .page-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    .page-title{
+      margin:0;
+      font-size:21px;
+      line-height:1.2;
+    }
+
+    .breadcrumb{
+      color:var(--muted);
+      margin-top:4px;
+      font-size:12px;
+    }
+
+    .button-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .btn{
+      border:1px solid #111;
+      background:#111;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:5px;
+      font-weight:700;
+      font-size:12px;
+    }
+
+    .btn:hover{opacity:.88}
+    .btn.secondary{
+      background:#fff;
+      color:#111;
+      border-color:#b9bec6;
+    }
+
+    .btn.ghost{
+      background:#f7f7f7;
+      color:#111;
+      border-color:#d1d5db;
+    }
+
+    .btn.danger{
+      background:#fff;
+      color:#b91c1c;
+      border-color:#efb4b4;
+    }
+
+    .btn.small{
+      padding:5px 8px;
+      font-size:11px;
+    }
+
+    .btn.icon{
+      width:30px;
+      height:30px;
+      padding:0;
+      display:grid;
+      place-items:center;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+
+    .metric-card{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-height:74px;
+    }
+
+    .metric-icon{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:#edf1f5;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+    }
+
+    .metric-value{
+      font-size:21px;
+      font-weight:800;
+      line-height:1.1;
+    }
+
+    .metric-label{
+      color:var(--muted);
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .toolbar{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:7px;
+      padding:8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .field-inline{
+      min-width:120px;
+      height:31px;
+      border:1px solid #b8bec7;
+      border-radius:4px;
+      background:#fff;
+      padding:0 8px;
+    }
+
+    .toolbar .search{
+      margin-left:auto;
+      min-width:200px;
+    }
+
+    .table-card{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+
+    th,td{
+      padding:10px 9px;
+      border-bottom:1px solid #d9dde3;
+      text-align:left;
+      vertical-align:middle;
+      white-space:nowrap;
+    }
+
+    th{
+      background:#fafafa;
+      font-size:11px;
+      color:#111;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    td{
+      font-size:12px;
+      color:#1f2937;
+    }
+
+    tr:hover td{background:#fbfbfc}
+
+    .link{
+      color:#005b96;
+      text-decoration:underline;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 7px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:700;
+      background:#e5e7eb;
+      color:#111;
+    }
+
+    .badge.blue{background:#dbeafe}
+    .badge.green{background:#dcfce7}
+    .badge.yellow{background:#fef3c7}
+    .badge.red{background:#fee2e2}
+    .badge.dark{background:#111;color:#fff}
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .section-title{
+      font-size:14px;
+      font-weight:800;
+      margin:0 0 10px;
+    }
+
+    .attention-list,.timeline-list,.simple-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .attention-item,.simple-item{
+      border:1px solid #e0e4e8;
+      border-radius:6px;
+      padding:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#fff;
+    }
+
+    .item-main{min-width:0}
+    .item-title{font-weight:700}
+    .item-sub{color:var(--muted);font-size:11px;margin-top:3px}
+
+    .progress{
+      height:8px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .progress > span{
+      display:block;
+      height:100%;
+      background:#111;
+    }
+
+    .project-header{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:15px;
+      margin-bottom:10px;
+    }
+
+    .project-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .project-id{
+      color:var(--muted);
+      font-size:11px;
+      margin-bottom:4px;
+    }
+
+    .project-name{
+      font-size:20px;
+      font-weight:800;
+      margin:0;
+    }
+
+    .project-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 14px;
+      margin-top:9px;
+      color:#4b5563;
+      font-size:11px;
+    }
+
+    .stage-track{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(9,1fr);
+      gap:4px;
+      align-items:center;
+    }
+
+    .stage-step{
+      text-align:center;
+      min-width:0;
+    }
+
+    .stage-dot{
+      width:25px;
+      height:25px;
+      border-radius:50%;
+      margin:0 auto 5px;
+      background:#e5e7eb;
+      border:1px solid #cbd0d6;
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .stage-step.done .stage-dot,
+    .stage-step.current .stage-dot{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    .stage-step.current .stage-dot{outline:3px solid #dbeafe}
+    .stage-label{
+      font-size:9px;
+      color:#4b5563;
+      white-space:normal;
+      line-height:1.15;
+    }
+
+    .tabs{
+      display:flex;
+      gap:4px;
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:7px;
+      padding:5px;
+      overflow-x:auto;
+      margin-bottom:10px;
+    }
+
+    .tab{
+      border:0;
+      background:transparent;
+      color:#374151;
+      border-radius:5px;
+      padding:8px 11px;
+      white-space:nowrap;
+      font-weight:700;
+      font-size:11px;
+    }
+
+    .tab.active{
+      background:#111;
+      color:#fff;
+    }
+
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .info-box{
+      border:1px solid #e0e4e8;
+      border-radius:6px;
+      padding:10px;
+      min-height:64px;
+    }
+
+    .info-label{
+      color:var(--muted);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      margin-bottom:5px;
+    }
+
+    .info-value{
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .timeline-entry{
+      position:relative;
+      padding:0 0 14px 22px;
+      border-left:1px solid #cfd4da;
+      margin-left:5px;
+    }
+
+    .timeline-entry:last-child{
+      border-left-color:transparent;
+      padding-bottom:0;
+    }
+
+    .timeline-entry::before{
+      content:"";
+      position:absolute;
+      left:-5px;
+      top:2px;
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:#111;
+    }
+
+    .timeline-time{
+      color:var(--muted);
+      font-size:10px;
+      margin-bottom:3px;
+    }
+
+    .timeline-title{font-weight:700}
+    .timeline-note{font-size:11px;color:#4b5563;margin-top:3px}
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.42);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:100;
+    }
+
+    .modal-backdrop.open{display:flex}
+
+    .modal{
+      width:min(1000px,96vw);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:9px;
+      border:1px solid #111;
+      box-shadow:0 14px 40px rgba(0,0,0,.2);
+    }
+
+    .modal.small-modal{width:min(560px,96vw)}
+
+    .modal-header{
+      position:sticky;
+      top:0;
+      background:#fff;
+      border-bottom:1px solid var(--border);
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      z-index:3;
+    }
+
+    .modal-title{
+      margin:0;
+      font-size:17px;
+    }
+
+    .close-btn{
+      border:0;
+      background:#fff;
+      font-size:20px;
+      line-height:1;
+    }
+
+    .modal-body{padding:16px}
+    .modal-footer{
+      padding:12px 16px;
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      position:sticky;
+      bottom:0;
+      background:#fff;
+    }
+
+    .choice-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .choice-card{
+      border:1px solid #b8bec7;
+      border-radius:8px;
+      padding:18px;
+      min-height:145px;
+      cursor:pointer;
+      background:#fff;
+    }
+
+    .choice-card:hover,.choice-card.selected{
+      border:2px solid #111;
+      background:#fafafa;
+    }
+
+    .choice-title{
+      font-size:16px;
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .choice-desc{
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .stepper{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:4px;
+      margin-bottom:16px;
+    }
+
+    .step{
+      padding:8px;
+      background:#eef1f4;
+      border-radius:5px;
+      text-align:center;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .step.active,.step.done{
+      background:#111;
+      color:#fff;
+    }
+
+    .form-step{display:none}
+    .form-step.active{display:block}
+
+    .form-section{
+      border:1px solid #e1e5e9;
+      border-radius:7px;
+      padding:13px;
+      margin-bottom:12px;
+    }
+
+    .form-section-title{
+      font-weight:800;
+      margin:0 0 11px;
+      font-size:13px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:11px;
+    }
+
+    .form-grid.two{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .form-group{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .form-group.full{grid-column:1/-1}
+
+    label{
+      font-weight:700;
+      font-size:11px;
+      color:#374151;
+    }
+
+    .required::after{content:" *";color:#b91c1c}
+
+    input,select,textarea{
+      width:100%;
+      border:1px solid #b9c0c9;
+      border-radius:5px;
+      padding:8px 9px;
+      background:#fff;
+      color:#111;
+    }
+
+    input[readonly],textarea[readonly]{
+      background:#f2f3f5;
+      color:#4b5563;
+    }
+
+    textarea{
+      min-height:76px;
+      resize:vertical;
+    }
+
+    .help{
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .alert{
+      border:1px solid #cfd5db;
+      background:#f8f9fa;
+      border-radius:6px;
+      padding:10px;
+      line-height:1.45;
+    }
+
+    .success-toast{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      background:#111;
+      color:#fff;
+      padding:12px 15px;
+      border-radius:6px;
+      z-index:200;
+      opacity:0;
+      transform:translateY(10px);
+      pointer-events:none;
+      transition:.25s;
+      box-shadow:0 8px 22px rgba(0,0,0,.2);
+    }
+
+    .success-toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .empty{
+      border:1px dashed #bfc5cc;
+      border-radius:6px;
+      padding:20px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .mobile-only{display:none}
+
+    @media(max-width:1100px){
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .grid-2{grid-template-columns:1fr}
+      .info-grid{grid-template-columns:repeat(2,1fr)}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:760px){
+      .app{display:block}
+      .sidebar{
+        transform:translateX(-100%);
+        transition:.2s;
+      }
+      .sidebar.open{transform:translateX(0)}
+      .main{grid-column:auto}
+      .mobile-only{display:inline-grid}
+      .cards{grid-template-columns:1fr}
+      .info-grid,.form-grid,.form-grid.two,.choice-grid{grid-template-columns:1fr}
+      .page-header,.project-top{flex-direction:column}
+      .toolbar .search{margin-left:0;min-width:100%}
+      .stage-track{grid-template-columns:repeat(3,1fr);gap:10px}
+      .status-wrap{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A1</div>
+        <div>
+          <div>A One Salasar</div>
+          <div style="font-size:10px;color:#6b7280;font-weight:500">NEW CRM</div>
+        </div>
+      </div>
+
+      <nav class="nav-section">
+        <a class="nav-item" href="#" data-page="dashboard">
+          <span>⌂</span><span>Dashboard</span>
+        </a>
+
+        <button class="nav-group-title" data-toggle="sales-nav">
+          <span class="nav-group-label"><span>▣</span><span>IT Sales</span></span>
+          <span>⌃</span>
+        </button>
+        <div class="nav-sub" id="sales-nav">
+          <a class="nav-item" href="#" data-page="prospects">Prospects</a>
+          <a class="nav-item" href="#" data-page="opportunities">Opportunities</a>
+        </div>
+
+        <button class="nav-group-title active" data-toggle="projects-nav">
+          <span class="nav-group-label"><span>▤</span><span>Project Management</span></span>
+          <span>⌃</span>
+        </button>
+        <div class="nav-sub" id="projects-nav">
+          <a class="nav-item active" href="#" data-page="project-dashboard">Project Dashboard</a>
+          <a class="nav-item" href="#" data-page="projects">All Projects</a>
+          <a class="nav-item" href="#" data-page="external-projects">External Projects</a>
+          <a class="nav-item" href="#" data-page="internal-projects">Internal Projects</a>
+          <a class="nav-item" href="#" data-page="approvals">Pending Approvals</a>
+          <a class="nav-item" href="#" data-page="completed-projects">Completed Projects</a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="top-left">
+          <button class="menu-btn mobile-only" id="mobileMenu">☰</button>
+          <button class="menu-btn" id="collapseBtn">☰</button>
+          <strong>A One Salasar CRM</strong>
+        </div>
+        <div class="top-right">
+          <div class="status-wrap">
+            <span>Your Current Status:</span>
+            <select class="status-select">
+              <option>Processing</option>
+              <option>Available</option>
+              <option>In Meeting</option>
+              <option>Break</option>
+            </select>
+          </div>
+          <span>▦</span>
+          <div class="user-chip">
+            <div class="avatar">AG</div>
+            <span>Ayush Gunjal</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Project Dashboard -->
+        <section class="page active" id="project-dashboard">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Project Management</h1>
+              <div class="breadcrumb">Home / Project Management / Dashboard</div>
+            </div>
+            <div class="button-row">
+              <button class="btn secondary" data-page-link="opportunities">View Opportunities</button>
+              <button class="btn" data-open="createProjectModal">+ Create Project</button>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card metric-card">
+              <div class="metric-icon">24</div>
+              <div><div class="metric-value">24</div><div class="metric-label">Active Projects</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">E</div>
+              <div><div class="metric-value">16</div><div class="metric-label">External Projects</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">I</div>
+              <div><div class="metric-value">8</div><div class="metric-label">Internal Projects</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">!</div>
+              <div><div class="metric-value">5</div><div class="metric-label">Delayed Projects</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">BA</div>
+              <div><div class="metric-value">6</div><div class="metric-label">Documentation Pending</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">D</div>
+              <div><div class="metric-value">4</div><div class="metric-label">Design Pending</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">A</div>
+              <div><div class="metric-value">3</div><div class="metric-label">Approvals Pending</div></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon">✓</div>
+              <div><div class="metric-value">12</div><div class="metric-label">Completed This Month</div></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3 class="section-title">Projects Requiring Attention</h3>
+              <div class="attention-list">
+                <div class="attention-item">
+                  <div class="item-main">
+                    <div class="item-title">PRJ-2026-0031 · Nishiland E-commerce Website</div>
+                    <div class="item-sub">Documentation overdue by 2 days · BA: Priya Shah</div>
+                  </div>
+                  <span class="badge red">Delayed</span>
+                </div>
+                <div class="attention-item">
+                  <div class="item-main">
+                    <div class="item-title">PRJ-2026-0028 · CRM Revamp</div>
+                    <div class="item-sub">Design approval pending from Management</div>
+                  </div>
+                  <span class="badge yellow">Approval</span>
+                </div>
+                <div class="attention-item">
+                  <div class="item-main">
+                    <div class="item-title">PRJ-2026-0024 · SAP Auction Integration</div>
+                    <div class="item-sub">IT handover accepted; development start not updated</div>
+                  </div>
+                  <span class="badge blue">IT Handover</span>
+                </div>
+                <div class="attention-item">
+                  <div class="item-main">
+                    <div class="item-title">PRJ-2026-0019 · Internal PMS Enhancement</div>
+                    <div class="item-sub">UAT issue remains open</div>
+                  </div>
+                  <span class="badge red">UAT Issue</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Stage Summary</h3>
+              <div class="simple-list">
+                <div class="simple-item"><span>Documentation</span><strong>6</strong></div>
+                <div class="simple-item"><span>Design</span><strong>4</strong></div>
+                <div class="simple-item"><span>Approval</span><strong>3</strong></div>
+                <div class="simple-item"><span>IT Development</span><strong>7</strong></div>
+                <div class="simple-item"><span>UAT</span><strong>4</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3 class="section-title">Upcoming Deadlines</h3>
+              <div class="table-card" style="box-shadow:none">
+                <table>
+                  <thead>
+                    <tr><th>Project</th><th>Current Work</th><th>Owner</th><th>Due Date</th><th>Days</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><span class="link" data-project-open>PRJ-2026-0032</span></td><td>Business Requirement Document</td><td>Kajal Patil</td><td>07 Aug 2026</td><td><span class="badge yellow">3</span></td></tr>
+                    <tr><td><span class="link" data-project-open>PRJ-2026-0030</span></td><td>UI Prototype</td><td>Prerna Singh</td><td>09 Aug 2026</td><td><span class="badge blue">5</span></td></tr>
+                    <tr><td><span class="link" data-project-open>PRJ-2026-0027</span></td><td>UAT Sign-off</td><td>Ayush Gunjal</td><td>10 Aug 2026</td><td><span class="badge blue">6</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Pending Approvals</h3>
+              <div class="attention-list">
+                <div class="attention-item">
+                  <div>
+                    <div class="item-title">Documentation v2</div>
+                    <div class="item-sub">PRJ-2026-0031 · Submitted by Kajal Patil</div>
+                  </div>
+                  <button class="btn small" data-page-link="approvals">Review</button>
+                </div>
+                <div class="attention-item">
+                  <div>
+                    <div class="item-title">UI Prototype v1</div>
+                    <div class="item-sub">PRJ-2026-0028 · Submitted by Prerna Singh</div>
+                  </div>
+                  <button class="btn small" data-page-link="approvals">Review</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Opportunities -->
+        <section class="page" id="opportunities">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Opportunities</h1>
+              <div class="breadcrumb">Home / Opportunities</div>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card metric-card"><div class="metric-icon">47</div><div><div class="metric-value">47</div><div class="metric-label">Total Deals</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">0</div><div><div class="metric-value">0</div><div class="metric-label">My Deals</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">4</div><div><div class="metric-value">4</div><div class="metric-label">Closed Won</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">₹</div><div><div class="metric-value">₹72,26,000</div><div class="metric-label">Pipeline Value</div></div></div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn small">My Deals</button>
+            <button class="btn secondary small">All Deals</button>
+            <select class="field-inline"><option>All Stages</option></select>
+            <select class="field-inline"><option>All Salespersons</option></select>
+            <select class="field-inline"><option>All Solutions</option></select>
+            <input class="field-inline" placeholder="From date" />
+            <input class="field-inline" placeholder="To date" />
+            <input class="field-inline search" placeholder="Search..." />
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Opportunity ID</th><th>Company Name</th><th>Deal Value</th><th>Stage</th>
+                  <th>Requirement Details</th><th>Opportunity Owner</th><th>Close Date</th><th>Pre-Sales</th><th>Project</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td><td><span class="link" data-opportunity-open>OPP-0055</span></td><td><strong>Graphon</strong></td><td>-</td>
+                  <td><span class="badge blue">Qualified</span></td><td>-</td><td>Aayush Jha</td><td>-</td>
+                  <td><span class="badge">Not Requested</span></td><td>-</td>
+                  <td><div class="button-row"><button class="btn small secondary" data-opportunity-open>View Profile</button><button class="btn icon secondary">✎</button></div></td>
+                </tr>
+                <tr>
+                  <td>2</td><td><span class="link" data-opportunity-open>OPP-0054</span></td><td><strong>Khushi Enterprises</strong></td><td>₹1,00,000</td>
+                  <td><span class="badge blue">Requirement Gathering</span></td><td>Credit Debit Software</td><td>Kashish Yadav</td><td>31/08/2026</td>
+                  <td><span class="badge yellow">Requested</span></td><td>-</td>
+                  <td><div class="button-row"><button class="btn small secondary" data-opportunity-open>View Profile</button><button class="btn icon secondary">✎</button></div></td>
+                </tr>
+                <tr>
+                  <td>3</td><td><span class="link" data-opportunity-open>OPP-0053</span></td><td><strong>Nishiland Sports Pvt Ltd</strong></td><td>₹1,00,000</td>
+                  <td><span class="badge green" id="oppTableStage">Closed Won</span></td><td>E-commerce Website</td><td>Aakash Yadgiri</td><td>07/08/2026</td>
+                  <td><span class="badge green" id="oppTablePresales">Client Confirmed</span></td>
+                  <td><span class="badge yellow">Not Created</span></td>
+                  <td>
+                    <div class="button-row">
+                      <button class="btn small secondary" data-opportunity-open>View Profile</button>
+                      <button class="btn small" data-convert-opportunity>Convert to Project</button>
+                      <button class="btn icon secondary">✎</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>4</td><td><span class="link" data-opportunity-open>OPP-0052</span></td><td><strong>VACI IIT JEE NEET</strong></td><td>₹1,00,000</td>
+                  <td><span class="badge yellow">Prototype</span></td><td>Sales CRM</td><td>Kashish Yadav</td><td>14/08/2026</td>
+                  <td><span class="badge yellow">Client Review</span></td><td>-</td>
+                  <td><div class="button-row"><button class="btn small secondary" data-opportunity-open>View Profile</button><button class="btn icon secondary">✎</button></div></td>
+                </tr>
+                <tr>
+                  <td>5</td><td><span class="link" data-opportunity-open>OPP-0049</span></td><td><strong>Lotus Trends Pvt Ltd</strong></td><td>₹1,00,000</td>
+                  <td><span class="badge green">Closed Won</span></td><td>Textile ERP</td><td>Aayush Jha</td><td>14/08/2026</td>
+                  <td><span class="badge green">Client Confirmed</span></td>
+                  <td><span class="link" data-project-open>PRJ-2026-0025</span></td>
+                  <td>
+                    <div class="button-row">
+                      <button class="btn small secondary" data-opportunity-open>View Profile</button>
+                      <button class="btn small secondary" data-project-open>View Project</button>
+                      <button class="btn icon secondary">✎</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <!-- Opportunity / Lead Profile -->
+        <section class="page" id="opportunity-detail">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Opportunity Profile</h1>
+              <div class="breadcrumb">Home / Opportunities / OPP-0053</div>
+            </div>
+            <div class="button-row">
+              <button class="btn secondary" data-page-link="opportunities">← Back to Opportunities</button>
+              <button class="btn" id="profileConvertBtn" data-convert-opportunity>Convert to Project</button>
+            </div>
+          </div>
+
+          <div class="project-header">
+            <div class="project-top">
+              <div>
+                <div class="project-id">OPP-0053 · External Opportunity</div>
+                <h2 class="project-name">Nishiland Sports Pvt Ltd — E-commerce Website</h2>
+                <div class="project-meta">
+                  <span><strong>Owner:</strong> Aakash Yadgiri</span>
+                  <span><strong>Deal Value:</strong> ₹1,00,000</span>
+                  <span><strong>Current Stage:</strong> <span class="badge green" id="oppProfileStage">Closed Won</span></span>
+                  <span><strong>Pre-Sales:</strong> <span class="badge green" id="oppProfilePresales">Client Confirmed</span></span>
+                  <span><strong>Expected Close:</strong> 07 Aug 2026</span>
+                </div>
+              </div>
+              <div class="button-row">
+                <button class="btn secondary" data-open="preSalesRequestModal">Pre-Sales Request</button>
+                <button class="btn secondary" data-open="clientFeedbackModal">Add Client Feedback</button>
+                <button class="btn secondary" data-open="clientConfirmationModal">Client Confirmation</button>
+              </div>
+            </div>
+
+            <div class="stage-track" style="grid-template-columns:repeat(8,1fr)">
+              <div class="stage-step done"><div class="stage-dot">1</div><div class="stage-label">Requirement Gathering</div></div>
+              <div class="stage-step done"><div class="stage-dot">2</div><div class="stage-label">Pre-Sales Request</div></div>
+              <div class="stage-step done"><div class="stage-dot">3</div><div class="stage-label">Prototype + Feature Doc</div></div>
+              <div class="stage-step done"><div class="stage-dot">4</div><div class="stage-label">Internal Review</div></div>
+              <div class="stage-step done"><div class="stage-dot">5</div><div class="stage-label">Client Review</div></div>
+              <div class="stage-step done"><div class="stage-dot">6</div><div class="stage-label">Client Confirmed</div></div>
+              <div class="stage-step current"><div class="stage-dot">7</div><div class="stage-label">Closed Won</div></div>
+              <div class="stage-step"><div class="stage-dot">8</div><div class="stage-label">Project Created</div></div>
+            </div>
+          </div>
+
+          <div class="tabs" id="opportunityTabs">
+            <button class="tab active" data-opp-tab="oppOverviewTab">Overview</button>
+            <button class="tab" data-opp-tab="oppPresalesTab">Pre-Sales Solution</button>
+            <button class="tab" data-opp-tab="oppClientTab">Client Feedback & Confirmation</button>
+            <button class="tab" data-opp-tab="oppDocsTab">Documents</button>
+            <button class="tab" data-opp-tab="oppHistoryTab">Activity & History</button>
+            <button class="tab" data-opp-tab="oppLinkedProjectTab">Linked Project</button>
+          </div>
+
+          <div class="tab-panel active opp-tab-panel" id="oppOverviewTab">
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Opportunity Information</h3>
+                <div class="info-grid">
+                  <div class="info-box"><div class="info-label">Opportunity ID</div><div class="info-value">OPP-0053</div></div>
+                  <div class="info-box"><div class="info-label">Company</div><div class="info-value">Nishiland Sports Pvt Ltd</div></div>
+                  <div class="info-box"><div class="info-label">Opportunity Owner</div><div class="info-value">Aakash Yadgiri</div></div>
+                  <div class="info-box"><div class="info-label">Solution</div><div class="info-value">E-commerce Website</div></div>
+                  <div class="info-box"><div class="info-label">Deal Value</div><div class="info-value">₹1,00,000</div></div>
+                  <div class="info-box"><div class="info-label">Primary Contact</div><div class="info-value">Mr. Nikhil Shah</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Requirement Summary</div><div class="info-value">Client needs an e-commerce website for pickleball products with product catalogue, user accounts, cart, checkout, online payment, order management and stock visibility.</div></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">Pre-Sales Summary</h3>
+                <div class="simple-list">
+                  <div class="simple-item"><span>Pre-Sales Requested By</span><strong>Sales Manager</strong></div>
+                  <div class="simple-item"><span>Assigned Business Analyst</span><strong>Priya Shah</strong></div>
+                  <div class="simple-item"><span>Assigned Designer</span><strong>Prerna Singh</strong></div>
+                  <div class="simple-item"><span>Prototype Status</span><strong>Approved by Client</strong></div>
+                  <div class="simple-item"><span>Feature Document</span><strong>Approved by Client</strong></div>
+                  <div class="simple-item"><span>Client Confirmation</span><span class="badge green">Confirmed</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Sales-to-Project Gate</h3>
+              <div class="attention-list">
+                <div class="attention-item"><div><div class="item-title">Sample Prototype</div><div class="item-sub">Final version v3 approved by client</div></div><span class="badge green">Complete</span></div>
+                <div class="attention-item"><div><div class="item-title">Feature / Solution Document</div><div class="item-sub">Final version v2 approved by client</div></div><span class="badge green">Complete</span></div>
+                <div class="attention-item"><div><div class="item-title">Client Confirmation</div><div class="item-sub">Confirmation received on 07 Aug 2026</div></div><span class="badge green">Complete</span></div>
+                <div class="attention-item"><div><div class="item-title">Opportunity Stage</div><div class="item-sub">Opportunity is Closed Won and ready for project onboarding</div></div><span class="badge green">Closed Won</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel opp-tab-panel" id="oppPresalesTab">
+            <div class="page-header">
+              <div><h3 class="section-title">Pre-Sales Solution Support</h3></div>
+              <div class="button-row">
+                <button class="btn secondary" data-open="preSalesRequestModal">Edit Request</button>
+                <button class="btn" data-open="presalesSubmissionModal">Submit Prototype / Feature Doc</button>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Support Request</h3>
+                <div class="info-grid">
+                  <div class="info-box"><div class="info-label">Pre-Sales Required</div><div class="info-value">Yes</div></div>
+                  <div class="info-box"><div class="info-label">Requested By</div><div class="info-value">Sales Manager</div></div>
+                  <div class="info-box"><div class="info-label">Request Date</div><div class="info-value">28 Jul 2026</div></div>
+                  <div class="info-box"><div class="info-label">Business Analyst</div><div class="info-value">Priya Shah</div></div>
+                  <div class="info-box"><div class="info-label">Designer</div><div class="info-value">Prerna Singh</div></div>
+                  <div class="info-box"><div class="info-label">Deadline</div><div class="info-value">03 Aug 2026</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Requirement Brief</div><div class="info-value">Prepare a sample client-facing prototype and a feature document covering the proposed e-commerce solution so the client can validate the workflow before commercial confirmation.</div></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">Pre-Sales Task Status</h3>
+                <div class="simple-list">
+                  <div class="simple-item"><span>BA Requirement / Feature Document</span><span class="badge green">Completed</span></div>
+                  <div class="simple-item"><span>Designer Sample Prototype</span><span class="badge green">Completed</span></div>
+                  <div class="simple-item"><span>Internal Sales Manager Review</span><span class="badge green">Approved</span></div>
+                  <div class="simple-item"><span>Client Review</span><span class="badge green">Confirmed</span></div>
+                </div>
+                <div class="alert" style="margin-top:12px">These are pre-sales tasks. They remain attached to the Opportunity and are copied into the Project profile only after the Opportunity is won and converted.</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Prototype & Feature Document Versions</h3>
+              <div class="table-card" style="box-shadow:none">
+                <table>
+                  <thead><tr><th>Deliverable</th><th>Owner</th><th>Version</th><th>Submitted</th><th>Internal Review</th><th>Client Status</th><th>Final</th><th>Action</th></tr></thead>
+                  <tbody id="presalesVersionsBody">
+                    <tr><td>Sample Prototype</td><td>Prerna Singh</td><td>v1</td><td>30 Jul 2026</td><td>Changes Requested</td><td>Not Shared</td><td>No</td><td><button class="btn small secondary">Open</button></td></tr>
+                    <tr><td>Sample Prototype</td><td>Prerna Singh</td><td>v3</td><td>03 Aug 2026</td><td>Approved</td><td><span class="badge green">Confirmed</span></td><td>Yes</td><td><button class="btn small secondary">Open Prototype</button></td></tr>
+                    <tr><td>Feature / Solution Document</td><td>Priya Shah</td><td>v2</td><td>03 Aug 2026</td><td>Approved</td><td><span class="badge green">Confirmed</span></td><td>Yes</td><td><button class="btn small secondary">Download</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel opp-tab-panel" id="oppClientTab">
+            <div class="grid-2">
+              <div class="card">
+                <div class="page-header">
+                  <div><h3 class="section-title">Client Feedback History</h3></div>
+                  <button class="btn small" data-open="clientFeedbackModal">+ Add Feedback</button>
+                </div>
+                <div class="timeline-list" id="clientFeedbackList">
+                  <div class="timeline-entry"><div class="timeline-time">07 Aug 2026 · 12:20 PM</div><div class="timeline-title">Client confirmed proposed solution</div><div class="timeline-note">Prototype v3 and Feature Document v2 accepted for project onboarding.</div></div>
+                  <div class="timeline-entry"><div class="timeline-time">02 Aug 2026 · 04:30 PM</div><div class="timeline-title">Client requested changes</div><div class="timeline-note">Add stock status and WhatsApp enquiry option to the product flow.</div></div>
+                  <div class="timeline-entry"><div class="timeline-time">31 Jul 2026 · 02:00 PM</div><div class="timeline-title">Initial solution shared</div><div class="timeline-note">Prototype v1 and Feature Document v1 shared by Sales Manager.</div></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">Client Confirmation</h3>
+                <div class="info-grid" style="grid-template-columns:1fr 1fr">
+                  <div class="info-box"><div class="info-label">Confirmation Status</div><div class="info-value"><span class="badge green" id="clientConfirmationBadge">Confirmed</span></div></div>
+                  <div class="info-box"><div class="info-label">Confirmation Date</div><div class="info-value" id="clientConfirmationDate">07 Aug 2026</div></div>
+                  <div class="info-box"><div class="info-label">Confirmed By</div><div class="info-value">Mr. Nikhil Shah</div></div>
+                  <div class="info-box"><div class="info-label">Method</div><div class="info-value">Email Confirmation</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Confirmation Note</div><div class="info-value">Client confirmed the proposed workflow and requested the team to proceed with formal project onboarding.</div></div>
+                </div>
+                <button class="btn secondary" style="margin-top:12px" data-open="clientConfirmationModal">Update Confirmation</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel opp-tab-panel" id="oppDocsTab">
+            <div class="card">
+              <h3 class="section-title">Opportunity Documents</h3>
+              <div class="table-card" style="box-shadow:none">
+                <table>
+                  <thead><tr><th>Document</th><th>Category</th><th>Version</th><th>Owner</th><th>Status</th><th>Carry to Project</th><th>Action</th></tr></thead>
+                  <tbody>
+                    <tr><td>Client Requirement Notes</td><td>Sales Requirement</td><td>v1</td><td>Aakash Yadgiri</td><td>Final</td><td>Yes</td><td><button class="btn small secondary">Download</button></td></tr>
+                    <tr><td>Sample E-commerce Prototype</td><td>Pre-Sales Prototype</td><td>v3</td><td>Prerna Singh</td><td><span class="badge green">Client Confirmed</span></td><td><span class="badge green">Yes</span></td><td><button class="btn small secondary">Open</button></td></tr>
+                    <tr><td>Feature / Solution Document</td><td>Pre-Sales Document</td><td>v2</td><td>Priya Shah</td><td><span class="badge green">Client Confirmed</span></td><td><span class="badge green">Yes</span></td><td><button class="btn small secondary">Download</button></td></tr>
+                    <tr><td>Commercial Proposal</td><td>Sales</td><td>Final</td><td>Sales Team</td><td>Accepted</td><td>Yes</td><td><button class="btn small secondary">Download</button></td></tr>
+                    <tr><td>Client Confirmation Email</td><td>Confirmation</td><td>Final</td><td>Sales Team</td><td>Confirmed</td><td>Yes</td><td><button class="btn small secondary">View</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel opp-tab-panel" id="oppHistoryTab">
+            <div class="card">
+              <h3 class="section-title">Opportunity & Pre-Sales Activity History</h3>
+              <div class="timeline-list">
+                <div class="timeline-entry"><div class="timeline-time">07 Aug 2026 · 12:25 PM</div><div class="timeline-title">Opportunity marked Closed Won</div><div class="timeline-note">Client confirmation completed. Opportunity is eligible for project conversion.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">07 Aug 2026 · 12:20 PM</div><div class="timeline-title">Client confirmation recorded</div><div class="timeline-note">Prototype v3 and Feature Document v2 confirmed.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">03 Aug 2026 · 03:10 PM</div><div class="timeline-title">Pre-Sales pack approved internally</div><div class="timeline-note">Sales Manager approved the revised prototype and feature document for client sharing.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">02 Aug 2026 · 04:35 PM</div><div class="timeline-title">Client changes assigned</div><div class="timeline-note">Feedback assigned to Priya Shah and Prerna Singh.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">28 Jul 2026 · 10:15 AM</div><div class="timeline-title">Pre-Sales support requested</div><div class="timeline-note">Sales Manager requested a sample prototype and feature document.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">27 Jul 2026 · 05:30 PM</div><div class="timeline-title">Requirement gathering updated</div><div class="timeline-note">Core e-commerce requirement captured by the sales team.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel opp-tab-panel" id="oppLinkedProjectTab">
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Project Conversion Status</h3>
+                <div class="simple-list">
+                  <div class="simple-item"><span>Client Confirmation</span><span class="badge green">Confirmed</span></div>
+                  <div class="simple-item"><span>Opportunity Status</span><span class="badge green">Closed Won</span></div>
+                  <div class="simple-item"><span>Project Creation Status</span><span class="badge yellow" id="linkedProjectStatus">Not Created</span></div>
+                  <div class="simple-item"><span>Project ID</span><strong id="linkedProjectId">—</strong></div>
+                </div>
+                <button class="btn" style="margin-top:12px" data-convert-opportunity id="linkedConvertBtn">Convert to Project</button>
+              </div>
+              <div class="card">
+                <h3 class="section-title">What Will Carry Forward</h3>
+                <div class="attention-list">
+                  <div class="attention-item"><span>Opportunity / Client Details</span><span class="badge green">Included</span></div>
+                  <div class="attention-item"><span>Requirement Summary</span><span class="badge green">Included</span></div>
+                  <div class="attention-item"><span>Final Sample Prototype v3</span><span class="badge green">Included</span></div>
+                  <div class="attention-item"><span>Final Feature Document v2</span><span class="badge green">Included</span></div>
+                  <div class="attention-item"><span>Client Feedback & Confirmation</span><span class="badge green">Included</span></div>
+                  <div class="attention-item"><span>Proposal / Sales Documents</span><span class="badge green">Included</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- All Projects -->
+        <section class="page" id="projects">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">All Projects</h1>
+              <div class="breadcrumb">Home / Project Management / All Projects</div>
+            </div>
+            <button class="btn" data-open="createProjectModal">+ Create Project</button>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn small">My Projects</button>
+            <button class="btn secondary small">All Projects</button>
+            <select class="field-inline"><option>All Types</option><option>External</option><option>Internal</option></select>
+            <select class="field-inline"><option>All Stages</option><option>Documentation</option><option>Design</option><option>Development</option><option>UAT</option></select>
+            <select class="field-inline"><option>All Health</option><option>On Track</option><option>At Risk</option><option>Delayed</option></select>
+            <input class="field-inline search" placeholder="Search project..." />
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project ID</th><th>Project Name</th><th>Type</th><th>Client / Department</th><th>Project Manager</th>
+                  <th>Current Stage</th><th>Current Owner</th><th>Start Date</th><th>Target Date</th><th>Progress</th><th>Health</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTableBody">
+                <tr>
+                  <td><span class="link" data-project-open>PRJ-2026-0031</span></td><td><strong>Nishiland E-commerce Website</strong></td><td><span class="badge blue">External</span></td>
+                  <td>Nishiland Sports Pvt Ltd</td><td>Ayush Gunjal</td><td><span class="badge yellow">Documentation</span></td><td>Priya Shah</td>
+                  <td>04 Aug 2026</td><td>30 Sep 2026</td><td><div class="progress" style="width:90px"><span style="width:15%"></span></div></td><td><span class="badge red">Delayed</span></td>
+                  <td><button class="btn small" data-project-open>View</button></td>
+                </tr>
+                <tr>
+                  <td><span class="link" data-project-open>PRJ-2026-0030</span></td><td><strong>CRM Revamp</strong></td><td><span class="badge dark">Internal</span></td>
+                  <td>IT Department</td><td>Ayush Gunjal</td><td><span class="badge blue">Design</span></td><td>Prerna Singh</td>
+                  <td>02 Aug 2026</td><td>20 Sep 2026</td><td><div class="progress" style="width:90px"><span style="width:35%"></span></div></td><td><span class="badge green">On Track</span></td>
+                  <td><button class="btn small" data-project-open>View</button></td>
+                </tr>
+                <tr>
+                  <td><span class="link" data-project-open>PRJ-2026-0024</span></td><td><strong>SAP Auction Integration</strong></td><td><span class="badge blue">External</span></td>
+                  <td>Dodla Dairy</td><td>Kashish Yadav</td><td><span class="badge blue">Development</span></td><td>IT Team Lead</td>
+                  <td>20 Jul 2026</td><td>15 Sep 2026</td><td><div class="progress" style="width:90px"><span style="width:70%"></span></div></td><td><span class="badge yellow">At Risk</span></td>
+                  <td><button class="btn small" data-project-open>View</button></td>
+                </tr>
+                <tr>
+                  <td><span class="link" data-project-open>PRJ-2026-0019</span></td><td><strong>Internal PMS Enhancement</strong></td><td><span class="badge dark">Internal</span></td>
+                  <td>Operations</td><td>Ayush Gunjal</td><td><span class="badge yellow">UAT</span></td><td>Kajal Patil</td>
+                  <td>01 Jul 2026</td><td>18 Aug 2026</td><td><div class="progress" style="width:90px"><span style="width:90%"></span></div></td><td><span class="badge red">Delayed</span></td>
+                  <td><button class="btn small" data-project-open>View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- External Projects -->
+        <section class="page" id="external-projects">
+          <div class="page-header">
+            <div><h1 class="page-title">External Projects</h1><div class="breadcrumb">Home / Project Management / External Projects</div></div>
+            <button class="btn" data-open="createProjectModal">+ Create Project</button>
+          </div>
+          <div class="alert" style="margin-bottom:10px">External projects are created from Closed Won Opportunities. Opportunity and commercial information is copied automatically.</div>
+          <div class="table-card">
+            <table>
+              <thead><tr><th>Project ID</th><th>Project Name</th><th>Client</th><th>Source Opportunity</th><th>Stage</th><th>Manager</th><th>Target Date</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><span class="link" data-project-open>PRJ-2026-0031</span></td><td>Nishiland E-commerce Website</td><td>Nishiland Sports Pvt Ltd</td><td>OPP-0053</td><td>Documentation</td><td>Ayush Gunjal</td><td>30 Sep 2026</td><td><span class="badge red">Delayed</span></td><td><button class="btn small" data-project-open>View</button></td></tr>
+                <tr><td><span class="link" data-project-open>PRJ-2026-0024</span></td><td>SAP Auction Integration</td><td>Dodla Dairy</td><td>OPP-0042</td><td>Development</td><td>Kashish Yadav</td><td>15 Sep 2026</td><td><span class="badge yellow">At Risk</span></td><td><button class="btn small" data-project-open>View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Internal Projects -->
+        <section class="page" id="internal-projects">
+          <div class="page-header">
+            <div><h1 class="page-title">Internal Projects</h1><div class="breadcrumb">Home / Project Management / Internal Projects</div></div>
+            <button class="btn" id="quickInternalCreate">+ Create Internal Project</button>
+          </div>
+          <div class="alert" style="margin-bottom:10px">Internal projects are created manually for departmental improvements, internal software, process automation, website changes, research, or infrastructure work.</div>
+          <div class="table-card">
+            <table>
+              <thead><tr><th>Project ID</th><th>Project Name</th><th>Requesting Department</th><th>Sponsor</th><th>Stage</th><th>Manager</th><th>Target Date</th><th>Health</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><span class="link" data-project-open>PRJ-2026-0030</span></td><td>CRM Revamp</td><td>IT Department</td><td>Management</td><td>Design</td><td>Ayush Gunjal</td><td>20 Sep 2026</td><td><span class="badge green">On Track</span></td><td><button class="btn small" data-project-open>View</button></td></tr>
+                <tr><td><span class="link" data-project-open>PRJ-2026-0019</span></td><td>Internal PMS Enhancement</td><td>Operations</td><td>COO</td><td>UAT</td><td>Ayush Gunjal</td><td>18 Aug 2026</td><td><span class="badge red">Delayed</span></td><td><button class="btn small" data-project-open>View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Approvals -->
+        <section class="page" id="approvals">
+          <div class="page-header">
+            <div><h1 class="page-title">Pending Approvals</h1><div class="breadcrumb">Home / Project Management / Pending Approvals</div></div>
+          </div>
+
+          <div class="cards">
+            <div class="card metric-card"><div class="metric-icon">3</div><div><div class="metric-value">3</div><div class="metric-label">Total Pending</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">2</div><div><div class="metric-value">2</div><div class="metric-label">Documentation</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">1</div><div><div class="metric-value">1</div><div class="metric-label">Design</div></div></div>
+            <div class="card metric-card"><div class="metric-icon">0</div><div><div class="metric-value">0</div><div class="metric-label">UAT / Closure</div></div></div>
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead><tr><th>Approval ID</th><th>Project</th><th>Type</th><th>Deliverable</th><th>Version</th><th>Submitted By</th><th>Submitted Date</th><th>Due Date</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>APR-2026-0081</td><td><span class="link" data-project-open>PRJ-2026-0031</span></td><td>Documentation</td><td>Business Requirement Document</td><td>v2</td><td>Priya Shah</td><td>04 Aug 2026</td><td>05 Aug 2026</td>
+                  <td><button class="btn small" data-review-approval="BRD v2">Review</button></td>
+                </tr>
+                <tr>
+                  <td>APR-2026-0080</td><td><span class="link" data-project-open>PRJ-2026-0030</span></td><td>Design</td><td>CRM Dashboard Prototype</td><td>v1</td><td>Prerna Singh</td><td>03 Aug 2026</td><td>05 Aug 2026</td>
+                  <td><button class="btn small" data-review-approval="UI Prototype v1">Review</button></td>
+                </tr>
+                <tr>
+                  <td>APR-2026-0079</td><td><span class="link" data-project-open>PRJ-2026-0029</span></td><td>Documentation</td><td>Functional Specification</td><td>v1</td><td>Kajal Patil</td><td>02 Aug 2026</td><td>04 Aug 2026</td>
+                  <td><button class="btn small" data-review-approval="Functional Specification v1">Review</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Completed Projects -->
+        <section class="page" id="completed-projects">
+          <div class="page-header">
+            <div><h1 class="page-title">Completed Projects</h1><div class="breadcrumb">Home / Project Management / Completed Projects</div></div>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead><tr><th>Project ID</th><th>Project Name</th><th>Type</th><th>Client / Department</th><th>Start Date</th><th>Completed Date</th><th>Outcome</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>PRJ-2026-0015</td><td>Material Tracking Module</td><td>External</td><td>Manufacturing Client</td><td>01 Jun 2026</td><td>20 Jul 2026</td><td><span class="badge green">Completed</span></td><td><button class="btn small secondary">View</button></td></tr>
+                <tr><td>PRJ-2026-0012</td><td>Sales CRM Phase 1</td><td>Internal</td><td>IT Sales</td><td>15 May 2026</td><td>05 Jul 2026</td><td><span class="badge green">Completed</span></td><td><button class="btn small secondary">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Project Detail -->
+        <section class="page" id="project-detail">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Project Details</h1>
+              <div class="breadcrumb">Home / Project Management / PRJ-2026-0031</div>
+            </div>
+            <button class="btn secondary" data-page-link="projects">← Back to Projects</button>
+          </div>
+
+          <div class="project-header">
+            <div class="project-top">
+              <div>
+                <div class="project-id">PRJ-2026-0031 · External Project</div>
+                <h2 class="project-name">Nishiland E-commerce Website</h2>
+                <div class="project-meta">
+                  <span><strong>Client:</strong> Nishiland Sports Pvt Ltd</span>
+                  <span><strong>Project Manager:</strong> Ayush Gunjal</span>
+                  <span><strong>Priority:</strong> High</span>
+                  <span><strong>Start:</strong> 04 Aug 2026</span>
+                  <span><strong>Target:</strong> 30 Sep 2026</span>
+                  <span><strong>Health:</strong> <span class="badge red">Delayed</span></span>
+                </div>
+              </div>
+              <div class="button-row">
+                <button class="btn secondary" data-open="assignmentModal">Assign Work</button>
+                <button class="btn secondary" data-open="approvalRequestModal">Request Approval</button>
+                <button class="btn secondary" data-open="stageModal">Change Stage</button>
+                <button class="btn">Download Project Pack</button>
+              </div>
+            </div>
+
+            <div class="stage-track">
+              <div class="stage-step done"><div class="stage-dot">1</div><div class="stage-label">Created</div></div>
+              <div class="stage-step current"><div class="stage-dot">2</div><div class="stage-label">Documentation</div></div>
+              <div class="stage-step"><div class="stage-dot">3</div><div class="stage-label">Doc Approval</div></div>
+              <div class="stage-step"><div class="stage-dot">4</div><div class="stage-label">Design</div></div>
+              <div class="stage-step"><div class="stage-dot">5</div><div class="stage-label">Design Approval</div></div>
+              <div class="stage-step"><div class="stage-dot">6</div><div class="stage-label">IT Handover</div></div>
+              <div class="stage-step"><div class="stage-dot">7</div><div class="stage-label">Development</div></div>
+              <div class="stage-step"><div class="stage-dot">8</div><div class="stage-label">UAT</div></div>
+              <div class="stage-step"><div class="stage-dot">9</div><div class="stage-label">Completed</div></div>
+            </div>
+          </div>
+
+          <div class="tabs" id="projectTabs">
+            <button class="tab active" data-tab="overviewTab">Overview</button>
+            <button class="tab" data-tab="presalesProjectTab">Pre-Sales & Opportunity</button>
+            <button class="tab" data-tab="assignmentsTab">Assignments</button>
+            <button class="tab" data-tab="documentsTab">Documents & Designs</button>
+            <button class="tab" data-tab="approvalsTab">Approvals</button>
+            <button class="tab" data-tab="handoverTab">IT Handover</button>
+            <button class="tab" data-tab="uatTab">UAT</button>
+            <button class="tab" data-tab="timelineTab">Timeline & History</button>
+          </div>
+
+          <div class="tab-panel active" id="overviewTab">
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Project Information</h3>
+                <div class="info-grid">
+                  <div class="info-box"><div class="info-label">Source Opportunity</div><div class="info-value">OPP-0053</div></div>
+                  <div class="info-box"><div class="info-label">Project Type</div><div class="info-value">External</div></div>
+                  <div class="info-box"><div class="info-label">Solution</div><div class="info-value">E-commerce Website</div></div>
+                  <div class="info-box"><div class="info-label">Client Contact</div><div class="info-value">Mr. Nikhil Shah</div></div>
+                  <div class="info-box"><div class="info-label">Deal Value</div><div class="info-value">₹1,00,000</div></div>
+                  <div class="info-box"><div class="info-label">Target Completion</div><div class="info-value">30 Sep 2026</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Scope Summary</div><div class="info-value">End-to-end e-commerce website with product catalogue, customer accounts, checkout, Razorpay integration and stock management.</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Expected Deliverables</div><div class="info-value">Approved BRD, UI prototype, responsive website, payment integration, inventory module, UAT sign-off and production handover.</div></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">Current Stage</h3>
+                <div class="info-grid" style="grid-template-columns:1fr 1fr">
+                  <div class="info-box"><div class="info-label">Stage</div><div class="info-value">Documentation</div></div>
+                  <div class="info-box"><div class="info-label">Current Owner</div><div class="info-value">Priya Shah</div></div>
+                  <div class="info-box"><div class="info-label">Original Deadline</div><div class="info-value">02 Aug 2026</div></div>
+                  <div class="info-box"><div class="info-label">Revised Deadline</div><div class="info-value">07 Aug 2026</div></div>
+                  <div class="info-box"><div class="info-label">Progress</div><div class="info-value">75%</div></div>
+                  <div class="info-box"><div class="info-label">Delay</div><div class="info-value"><span class="badge red">2 days</span></div></div>
+                </div>
+                <div style="margin-top:12px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>Overall Progress</strong><strong>15%</strong></div>
+                  <div class="progress"><span style="width:15%"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Team Information</h3>
+                <div class="info-grid">
+                  <div class="info-box"><div class="info-label">Project Manager</div><div class="info-value">Ayush Gunjal</div></div>
+                  <div class="info-box"><div class="info-label">Business Analyst</div><div class="info-value">Priya Shah</div></div>
+                  <div class="info-box"><div class="info-label">Designer</div><div class="info-value">Prerna Singh</div></div>
+                  <div class="info-box"><div class="info-label">IT Team Lead</div><div class="info-value">Rohit Sharma</div></div>
+                  <div class="info-box"><div class="info-label">UAT Owner</div><div class="info-value">Kajal Patil</div></div>
+                  <div class="info-box"><div class="info-label">Management Approver</div><div class="info-value">Management</div></div>
+                </div>
+              </div>
+              <div class="card">
+                <h3 class="section-title">Next Actions</h3>
+                <div class="attention-list">
+                  <div class="attention-item"><div><div class="item-title">Complete documentation</div><div class="item-sub">Revised deadline: 07 Aug 2026</div></div><span class="badge red">Priority</span></div>
+                  <div class="attention-item"><div><div class="item-title">Submit BRD for approval</div><div class="item-sub">Management review required</div></div><span class="badge yellow">Next</span></div>
+                  <div class="attention-item"><div><div class="item-title">Prepare design assignment</div><div class="item-sub">Will unlock after BRD approval</div></div><span class="badge">Locked</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="tab-panel" id="presalesProjectTab">
+            <div class="alert" style="margin-bottom:12px">
+              This is a read-only snapshot of the sales and pre-sales information carried from the source Opportunity when the project was created. The original records remain inside the Opportunity Profile.
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">Source Opportunity</h3>
+                <div class="info-grid">
+                  <div class="info-box"><div class="info-label">Opportunity ID</div><div class="info-value"><span class="link" data-opportunity-open>OPP-0053</span></div></div>
+                  <div class="info-box"><div class="info-label">Company</div><div class="info-value">Nishiland Sports Pvt Ltd</div></div>
+                  <div class="info-box"><div class="info-label">Opportunity Owner</div><div class="info-value">Aakash Yadgiri</div></div>
+                  <div class="info-box"><div class="info-label">Deal Value</div><div class="info-value">₹1,00,000</div></div>
+                  <div class="info-box"><div class="info-label">Client Confirmation</div><div class="info-value"><span class="badge green">Confirmed</span></div></div>
+                  <div class="info-box"><div class="info-label">Confirmation Date</div><div class="info-value">07 Aug 2026</div></div>
+                  <div class="info-box" style="grid-column:1/-1"><div class="info-label">Original Sales Requirement</div><div class="info-value">E-commerce website for pickleball products with catalogue, customer accounts, cart, checkout, payment gateway, order management and stock visibility.</div></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">Pre-Sales Team & Handover</h3>
+                <div class="simple-list">
+                  <div class="simple-item"><span>Requested By</span><strong>Sales Manager</strong></div>
+                  <div class="simple-item"><span>Business Analyst</span><strong>Priya Shah</strong></div>
+                  <div class="simple-item"><span>Designer</span><strong>Prerna Singh</strong></div>
+                  <div class="simple-item"><span>Internal Review</span><span class="badge green">Approved</span></div>
+                  <div class="simple-item"><span>Client Review</span><span class="badge green">Confirmed</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:12px">
+              <h3 class="section-title">Confirmed Pre-Sales Deliverables</h3>
+              <div class="table-card" style="box-shadow:none">
+                <table>
+                  <thead><tr><th>Deliverable</th><th>Version</th><th>Owner</th><th>Client Status</th><th>Source</th><th>Action</th></tr></thead>
+                  <tbody>
+                    <tr><td>Sample E-commerce Prototype</td><td>v3</td><td>Prerna Singh</td><td><span class="badge green">Confirmed</span></td><td>Opportunity OPP-0053</td><td><button class="btn small secondary">Open Prototype</button></td></tr>
+                    <tr><td>Feature / Solution Document</td><td>v2</td><td>Priya Shah</td><td><span class="badge green">Confirmed</span></td><td>Opportunity OPP-0053</td><td><button class="btn small secondary">Download</button></td></tr>
+                    <tr><td>Client Confirmation Email</td><td>Final</td><td>Sales Team</td><td><span class="badge green">Confirmed</span></td><td>Opportunity OPP-0053</td><td><button class="btn small secondary">View</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="section-title">Client Feedback Carried Into Project</h3>
+              <div class="timeline-list">
+                <div class="timeline-entry"><div class="timeline-time">07 Aug 2026</div><div class="timeline-title">Client confirmed final pre-sales solution</div><div class="timeline-note">Use Prototype v3 and Feature Document v2 as reference inputs during formal BA documentation.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">02 Aug 2026</div><div class="timeline-title">Client requested workflow additions</div><div class="timeline-note">Stock visibility and WhatsApp enquiry flow were added before confirmation.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">31 Jul 2026</div><div class="timeline-title">Initial prototype and feature document shared</div><div class="timeline-note">Initial client review started.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="assignmentsTab">
+            <div class="page-header">
+              <div><h3 class="section-title">Project Assignments</h3></div>
+              <button class="btn" data-open="assignmentModal">+ New Assignment</button>
+            </div>
+            <div class="table-card">
+              <table>
+                <thead><tr><th>Assignment ID</th><th>Assignment</th><th>Phase</th><th>Assigned To</th><th>Original Deadline</th><th>Current Deadline</th><th>Status</th><th>Delay</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>ASG-2026-0135</td><td>Prepare Business Requirement Document</td><td>Documentation</td><td>Priya Shah</td><td>02 Aug 2026</td><td>07 Aug 2026</td><td><span class="badge blue">In Progress</span></td><td><span class="badge red">2 days</span></td><td><button class="btn small secondary" data-open="delayModal">View Delay</button></td></tr>
+                  <tr><td>ASG-2026-0136</td><td>Create UI/UX Prototype</td><td>Design</td><td>Prerna Singh</td><td>12 Aug 2026</td><td>12 Aug 2026</td><td><span class="badge">Not Started</span></td><td>-</td><td><button class="btn small secondary">Open in My Tasks</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="documentsTab">
+            <div class="page-header">
+              <div><h3 class="section-title">Documents & Designs</h3></div>
+              <button class="btn">Upload New Version</button>
+            </div>
+            <div class="table-card">
+              <table>
+                <thead><tr><th>Document</th><th>Category</th><th>Version</th><th>Submitted By</th><th>Submitted Date</th><th>Approval Status</th><th>Final</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>Sample E-commerce Prototype</td><td>Pre-Sales Prototype</td><td>v3</td><td>Prerna Singh</td><td>07 Aug 2026</td><td><span class="badge green">Client Confirmed</span></td><td>Reference</td><td><button class="btn small secondary">Open</button></td></tr>
+                  <tr><td>Feature / Solution Document</td><td>Pre-Sales Document</td><td>v2</td><td>Priya Shah</td><td>07 Aug 2026</td><td><span class="badge green">Client Confirmed</span></td><td>Reference</td><td><button class="btn small secondary">Download</button></td></tr>
+                  <tr><td>Business Requirement Document</td><td>Documentation</td><td>v1</td><td>Priya Shah</td><td>01 Aug 2026</td><td><span class="badge red">Changes Requested</span></td><td>No</td><td><button class="btn small secondary">Download</button></td></tr>
+                  <tr><td>Business Requirement Document</td><td>Documentation</td><td>v2</td><td>Priya Shah</td><td>04 Aug 2026</td><td><span class="badge yellow">Pending</span></td><td>No</td><td><button class="btn small secondary">Download</button></td></tr>
+                  <tr><td>Reference Website List</td><td>Reference</td><td>v1</td><td>Ayush Gunjal</td><td>04 Aug 2026</td><td><span class="badge green">Accepted</span></td><td>Yes</td><td><button class="btn small secondary">Open</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="approvalsTab">
+            <div class="table-card">
+              <table>
+                <thead><tr><th>Approval ID</th><th>Type</th><th>Deliverable</th><th>Version</th><th>Submitted By</th><th>Approver</th><th>Decision</th><th>Decision Date</th><th>Comments</th></tr></thead>
+                <tbody>
+                  <tr><td>APR-2026-0075</td><td>Documentation</td><td>BRD</td><td>v1</td><td>Priya Shah</td><td>Management</td><td><span class="badge red">Changes Requested</span></td><td>02 Aug 2026</td><td>Add inventory and delivery workflow.</td></tr>
+                  <tr><td>APR-2026-0081</td><td>Documentation</td><td>BRD</td><td>v2</td><td>Priya Shah</td><td>Management</td><td><span class="badge yellow">Pending</span></td><td>-</td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="handoverTab">
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">IT Handover Details</h3>
+                <div class="form-grid two">
+                  <div class="form-group"><label>Project ID</label><input value="PRJ-2026-0031" readonly></div>
+                  <div class="form-group"><label>IT Team Lead</label><select><option>Rohit Sharma</option></select></div>
+                  <div class="form-group"><label>Handover Date</label><input value="Pending" readonly></div>
+                  <div class="form-group"><label>Priority</label><select><option>High</option></select></div>
+                  <div class="form-group full"><label>Final Scope Summary</label><textarea>End-to-end e-commerce website with catalogue, customer accounts, checkout, payment integration and stock management.</textarea></div>
+                  <div class="form-group"><label>Approved Documentation</label><input value="Not yet approved" readonly></div>
+                  <div class="form-group"><label>Approved Design</label><input value="Not yet available" readonly></div>
+                  <div class="form-group full"><label>Handover Notes</label><textarea placeholder="Add notes for the IT Team Lead"></textarea></div>
+                </div>
+                <div class="button-row" style="margin-top:12px"><button class="btn">Submit IT Handover</button><button class="btn secondary">Save Draft</button></div>
+              </div>
+              <div class="card">
+                <h3 class="section-title">IT Team Lead View</h3>
+                <div class="simple-list">
+                  <div class="simple-item"><span>Approved Documentation</span><button class="btn small secondary">Download</button></div>
+                  <div class="simple-item"><span>Approved Design</span><button class="btn small secondary">Download</button></div>
+                  <div class="simple-item"><span>Project Pack</span><button class="btn small secondary">Download</button></div>
+                </div>
+                <div class="form-group" style="margin-top:12px">
+                  <label>Development Tool Link</label>
+                  <input placeholder="Paste existing development tool URL">
+                </div>
+                <div class="form-group" style="margin-top:10px">
+                  <label>Development Status</label>
+                  <select id="devStatus">
+                    <option>Handover Pending</option>
+                    <option>Handover Accepted</option>
+                    <option>Development In Progress</option>
+                    <option>Development Blocked</option>
+                    <option>Development Completed</option>
+                  </select>
+                </div>
+                <button class="btn" style="margin-top:10px" id="saveDevStatus">Update Status</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="uatTab">
+            <div class="grid-2">
+              <div class="card">
+                <h3 class="section-title">UAT Details</h3>
+                <div class="form-grid two">
+                  <div class="form-group"><label>UAT Owner</label><select><option>Kajal Patil</option></select></div>
+                  <div class="form-group"><label>UAT Type</label><select><option>Internal</option><option>Client</option></select></div>
+                  <div class="form-group"><label>UAT Start Date</label><input type="date"></div>
+                  <div class="form-group"><label>Target Date</label><input type="date"></div>
+                  <div class="form-group"><label>Build Version</label><input placeholder="e.g. v1.0"></div>
+                  <div class="form-group"><label>Test Environment URL</label><input placeholder="https://"></div>
+                  <div class="form-group full"><label>UAT Status</label><select id="uatStatus"><option>Not Started</option><option>In Progress</option><option>Issues Identified</option><option>Rework Required</option><option>Retesting</option><option>Passed</option><option>Signed Off</option></select></div>
+                  <div class="form-group full"><label>UAT Comments</label><textarea></textarea></div>
+                </div>
+                <button class="btn" id="saveUat">Save UAT Update</button>
+              </div>
+
+              <div class="card">
+                <h3 class="section-title">UAT Issues</h3>
+                <div class="attention-list">
+                  <div class="attention-item">
+                    <div><div class="item-title">Checkout payment callback issue</div><div class="item-sub">High severity · Assigned to IT Team Lead</div></div>
+                    <span class="badge red">Open</span>
+                  </div>
+                  <div class="attention-item">
+                    <div><div class="item-title">Stock quantity display mismatch</div><div class="item-sub">Medium severity · Retest required</div></div>
+                    <span class="badge yellow">Retest</span>
+                  </div>
+                </div>
+                <button class="btn secondary" style="margin-top:12px" data-open="uatIssueModal">+ Add UAT Issue</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="timelineTab">
+            <div class="card">
+              <h3 class="section-title">Project Timeline & Audit History</h3>
+              <div class="timeline-list">
+                <div class="timeline-entry"><div class="timeline-time">07 Aug 2026 · Project Conversion</div><div class="timeline-title">Approved pre-sales information carried from Opportunity</div><div class="timeline-note">Prototype v3, Feature Document v2, client feedback and confirmation from OPP-0053 added to the Project profile as reference inputs.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">04 Aug 2026 · 11:20 AM</div><div class="timeline-title">Documentation Version 2 submitted</div><div class="timeline-note">Submitted by Priya Shah for management approval.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">03 Aug 2026 · 04:10 PM</div><div class="timeline-title">Revised deadline approved</div><div class="timeline-note">Original: 02 Aug 2026 · Revised: 07 Aug 2026 · Approved by Ayush Gunjal.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">03 Aug 2026 · 10:25 AM</div><div class="timeline-title">Delay reason submitted</div><div class="timeline-note">Reason: Additional inventory workflow clarification required.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">02 Aug 2026 · 03:40 PM</div><div class="timeline-title">Documentation Version 1 changes requested</div><div class="timeline-note">Management requested inventory and dispatch workflow additions.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">29 Jul 2026 · 12:30 PM</div><div class="timeline-title">Documentation assigned</div><div class="timeline-note">Business Requirement Document assigned to Priya Shah with deadline 02 Aug 2026.</div></div>
+                <div class="timeline-entry"><div class="timeline-time">29 Jul 2026 · 11:45 AM</div><div class="timeline-title">Project created from Opportunity</div><div class="timeline-note">OPP-0053 converted to PRJ-2026-0031 by Ayush Gunjal.</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Placeholder pages -->
+        <section class="page" id="dashboard"><div class="card"><h1 class="page-title">Dashboard</h1><p>This prototype focuses on the Project Management module.</p></div></section>
+        <section class="page" id="prospects"><div class="card"><h1 class="page-title">Prospects</h1><p>Existing Prospects module placeholder.</p></div></section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Project Modal -->
+  <div class="modal-backdrop" id="createProjectModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Create Project</h2>
+          <div class="help" id="createSubTitle">Choose how the project will be created.</div>
+        </div>
+        <button class="close-btn" data-close>×</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="projectSourceView">
+          <div class="choice-grid">
+            <div class="choice-card" data-source="external">
+              <div class="choice-title">Convert Won Opportunity</div>
+              <div class="choice-desc">Create an external client project. Opportunity, company, requirement, deal value and documents will be copied automatically.</div>
+              <div style="margin-top:18px"><span class="badge blue">External Project</span></div>
+            </div>
+            <div class="choice-card" data-source="internal">
+              <div class="choice-title">Create Internal Project</div>
+              <div class="choice-desc">Create a project manually for internal software, department improvement, automation, website work or operational initiatives.</div>
+              <div style="margin-top:18px"><span class="badge dark">Internal Project</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="projectFormView" style="display:none">
+          <div class="stepper">
+            <div class="step active" data-step-indicator="1">1. Source</div>
+            <div class="step" data-step-indicator="2">2. Project Details</div>
+            <div class="step" data-step-indicator="3">3. Scope & Team</div>
+            <div class="step" data-step-indicator="4">4. Workflow</div>
+            <div class="step" data-step-indicator="5">5. Review</div>
+          </div>
+
+          <form id="projectForm">
+            <div class="form-step active" data-step="1">
+              <div class="form-section">
+                <h3 class="form-section-title">Project Source</h3>
+                <div class="form-grid">
+                  <div class="form-group external-only">
+                    <label class="required">Won Opportunity</label>
+                    <select id="oppSelect">
+                      <option value="OPP-0053">OPP-0053 · Nishiland Sports Pvt Ltd</option>
+                      <option value="OPP-0049">OPP-0049 · Lotus Trends Pvt Ltd</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Project Type</label>
+                    <input id="projectType" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Created Date / Start Date</label>
+                    <input value="04 Aug 2026" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section external-only">
+                <h3 class="form-section-title">Opportunity Information</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Opportunity ID</label><input id="oppId" value="OPP-0053" readonly></div>
+                  <div class="form-group"><label>Company Name</label><input id="companyName" value="Nishiland Sports Pvt Ltd" readonly></div>
+                  <div class="form-group"><label>Opportunity Owner</label><input value="Aakash Yadgiri" readonly></div>
+                  <div class="form-group"><label>Deal Value</label><input value="₹1,00,000" readonly></div>
+                  <div class="form-group"><label>Solution</label><input value="E-commerce Website" readonly></div>
+                  <div class="form-group"><label>Close Date</label><input value="07 Aug 2026" readonly></div>
+                  <div class="form-group full"><label>Requirement Details</label><textarea readonly>E-commerce website with WhatsApp, payment gateway, product management and stock management.</textarea></div>
+                </div>
+              </div>
+
+              <div class="form-section external-only">
+                <h3 class="form-section-title">Approved Pre-Sales Information — Carried From Opportunity</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Pre-Sales Status</label><input value="Client Confirmed" readonly></div>
+                  <div class="form-group"><label>Final Prototype</label><input value="Sample E-commerce Prototype · v3" readonly></div>
+                  <div class="form-group"><label>Final Feature Document</label><input value="Feature / Solution Document · v2" readonly></div>
+                  <div class="form-group"><label>Client Confirmation Date</label><input value="07 Aug 2026" readonly></div>
+                  <div class="form-group"><label>Pre-Sales BA</label><input value="Priya Shah" readonly></div>
+                  <div class="form-group"><label>Pre-Sales Designer</label><input value="Prerna Singh" readonly></div>
+                  <div class="form-group full"><label>Client Feedback Summary</label><textarea readonly>Client requested stock status and WhatsApp enquiry in the sample solution. Both were incorporated in the confirmed prototype and feature document.</textarea></div>
+                </div>
+                <div class="alert" style="margin-top:10px">These records stay in the Opportunity history and will also appear in the Project profile after conversion. They are reference inputs for formal project documentation; they do not replace the formal BA documentation stage.</div>
+              </div>
+
+              <div class="form-section internal-only">
+                <h3 class="form-section-title">Internal Request</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label class="required">Requesting Department</label><select><option>IT Department</option><option>Sales</option><option>Marketing</option><option>Operations</option><option>Accounts</option><option>HR</option></select></div>
+                  <div class="form-group"><label class="required">Requested By</label><select><option>Ayush Gunjal</option><option>Kajal Patil</option><option>Prerna Singh</option></select></div>
+                  <div class="form-group"><label class="required">Project Sponsor</label><select><option>Management</option><option>Department Head</option><option>COO</option><option>CEO</option></select></div>
+                  <div class="form-group full"><label class="required">Current Problem</label><textarea placeholder="Describe the current business or process problem"></textarea></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="2">
+              <div class="form-section">
+                <h3 class="form-section-title">Basic Project Information</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Project ID</label><input value="Auto-generated after creation" readonly></div>
+                  <div class="form-group"><label class="required">Project Name</label><input id="newProjectName" value="Nishiland E-commerce Website"></div>
+                  <div class="form-group"><label class="required">Project Category</label><select><option>Website Development</option><option>CRM Implementation</option><option>UI/UX Design</option><option>Internal Enhancement</option><option>Integration Project</option></select></div>
+                  <div class="form-group"><label class="required">Priority</label><select><option>High</option><option>Medium</option><option>Low</option><option>Critical</option></select></div>
+                  <div class="form-group"><label class="required">Project Manager</label><select><option>Ayush Gunjal</option><option>Kashish Yadav</option><option>Aayush Jha</option></select></div>
+                  <div class="form-group"><label class="required">Target Completion Date</label><input type="date" value="2026-09-30"></div>
+                  <div class="form-group full"><label class="required">Project Description</label><textarea>Design and develop an end-to-end e-commerce website for the client's pickleball ball products.</textarea></div>
+                </div>
+              </div>
+
+              <div class="form-section external-only">
+                <h3 class="form-section-title">Client & Commercial References</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label class="required">Client Project Contact</label><input value="Mr. Nikhil Shah"></div>
+                  <div class="form-group"><label>PO / Work Order Number</label><input placeholder="Optional"></div>
+                  <div class="form-group"><label>Contract Number</label><input placeholder="Optional"></div>
+                  <div class="form-group"><label>Committed Delivery Date</label><input type="date"></div>
+                  <div class="form-group"><label>Proposal Reference</label><input value="Proposal - Nishiland E-commerce"></div>
+                  <div class="form-group"><label>Contract Attachment</label><input type="file"></div>
+                </div>
+              </div>
+
+              <div class="form-section internal-only">
+                <h3 class="form-section-title">Internal Business Details</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Process / Module Affected</label><input placeholder="e.g. CRM, PMS, Accounts"></div>
+                  <div class="form-group"><label>Cost Centre</label><input placeholder="Optional"></div>
+                  <div class="form-group"><label>Estimated Internal Budget</label><input placeholder="Optional"></div>
+                  <div class="form-group full"><label>Expected Business Benefit</label><textarea placeholder="Describe expected outcome or improvement"></textarea></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="3">
+              <div class="form-section">
+                <h3 class="form-section-title">Scope & Deliverables</h3>
+                <div class="form-grid two">
+                  <div class="form-group full"><label class="required">Final Scope Summary</label><textarea>Product catalogue, customer accounts, cart, checkout, Razorpay integration, order management and stock management.</textarea></div>
+                  <div class="form-group"><label class="required">Expected Deliverables</label><textarea>BRD, UI prototype, responsive website, payment integration, inventory module, UAT sign-off.</textarea></div>
+                  <div class="form-group"><label>Out of Scope</label><textarea>Mobile application and third-party ERP integration in Phase 1.</textarea></div>
+                  <div class="form-group"><label>Dependencies</label><textarea>Product data, payment credentials and hosting access from client.</textarea></div>
+                  <div class="form-group"><label>Risks / Constraints</label><textarea>Delay in client content or approval may affect delivery.</textarea></div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">Initial Team & Stakeholders</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Business Analyst</label><select><option>Priya Shah</option><option>Kajal Patil</option></select></div>
+                  <div class="form-group"><label>Designer</label><select><option>Prerna Singh</option><option>Not Assigned</option></select></div>
+                  <div class="form-group"><label>IT Team Lead</label><select><option>Rohit Sharma</option><option>Not Assigned</option></select></div>
+                  <div class="form-group"><label>UAT Owner</label><select><option>Kajal Patil</option><option>Ayush Gunjal</option></select></div>
+                  <div class="form-group"><label class="required">Management Approver</label><select><option>Management</option><option>Director</option><option>Department Head</option></select></div>
+                  <div class="form-group"><label>Additional Stakeholders</label><input placeholder="Select or enter names"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="4">
+              <div class="form-section">
+                <h3 class="form-section-title">Workflow Template</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="required">Select Workflow</label>
+                    <select>
+                      <option>Software / Website Development</option>
+                      <option>UI/UX Design Only</option>
+                      <option>Internal Enhancement</option>
+                      <option>Integration Project</option>
+                    </select>
+                  </div>
+                  <div class="form-group"><label>Initial Stage</label><input value="Project Created" readonly></div>
+                  <div class="form-group"><label>Project Health</label><input value="On Track" readonly></div>
+                </div>
+                <div style="margin-top:14px">
+                  <div class="stage-track">
+                    <div class="stage-step current"><div class="stage-dot">1</div><div class="stage-label">Created</div></div>
+                    <div class="stage-step"><div class="stage-dot">2</div><div class="stage-label">Documentation</div></div>
+                    <div class="stage-step"><div class="stage-dot">3</div><div class="stage-label">Doc Approval</div></div>
+                    <div class="stage-step"><div class="stage-dot">4</div><div class="stage-label">Design</div></div>
+                    <div class="stage-step"><div class="stage-dot">5</div><div class="stage-label">Design Approval</div></div>
+                    <div class="stage-step"><div class="stage-dot">6</div><div class="stage-label">IT Handover</div></div>
+                    <div class="stage-step"><div class="stage-dot">7</div><div class="stage-label">Development</div></div>
+                    <div class="stage-step"><div class="stage-dot">8</div><div class="stage-label">UAT</div></div>
+                    <div class="stage-step"><div class="stage-dot">9</div><div class="stage-label">Completed</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="form-section-title">Initial Documentation Assignment</h3>
+                <div class="form-grid">
+                  <div class="form-group"><label>Create BA Assignment</label><select><option>Yes, create after project activation</option><option>No, create later</option></select></div>
+                  <div class="form-group"><label>Document Type</label><select><option>Business Requirement Document</option><option>Functional Requirement Document</option><option>Scope Document</option></select></div>
+                  <div class="form-group"><label>Documentation Deadline</label><input type="date" value="2026-08-10"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-step" data-step="5">
+              <div class="alert" style="margin-bottom:12px">
+                Review the information below. After creation, the Project ID will be generated and the initial documentation assignment will appear in the Business Analyst's My Tasks module.
+              </div>
+              <div class="grid-2">
+                <div class="card" style="box-shadow:none">
+                  <h3 class="section-title">Project Summary</h3>
+                  <div class="simple-list">
+                    <div class="simple-item"><span>Project Type</span><strong id="reviewType">External</strong></div>
+                    <div class="simple-item"><span>Project Name</span><strong id="reviewName">Nishiland E-commerce Website</strong></div>
+                    <div class="simple-item"><span>Project Manager</span><strong>Ayush Gunjal</strong></div>
+                    <div class="simple-item"><span>Start Date</span><strong>04 Aug 2026</strong></div>
+                    <div class="simple-item"><span>Target Completion</span><strong>30 Sep 2026</strong></div>
+                  </div>
+                </div>
+                <div class="card" style="box-shadow:none">
+                  <h3 class="section-title">Workflow Summary</h3>
+                  <div class="simple-list">
+                    <div class="simple-item"><span>First Assignment</span><strong>Documentation</strong></div>
+                    <div class="simple-item"><span>Assigned BA</span><strong>Priya Shah</strong></div>
+                    <div class="simple-item"><span>Management Approval</span><strong>Required</strong></div>
+                    <div class="simple-item"><span>IT Handover</span><strong>After Design Approval</strong></div>
+                    <div class="simple-item"><span>Final Stage</span><strong>UAT & Closure</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn secondary" id="backProjectBtn" style="display:none">Back</button>
+        <button class="btn secondary" data-close>Cancel</button>
+        <button class="btn" id="nextProjectBtn" style="display:none">Next</button>
+        <button class="btn" id="createProjectBtn" style="display:none">Create and Start Documentation</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Pre-Sales Request Modal -->
+  <div class="modal-backdrop" id="preSalesRequestModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Pre-Sales Solution Request</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Opportunity ID</label><input value="OPP-0053" readonly></div>
+          <div class="form-group"><label>Requested By</label><input value="Sales Manager" readonly></div>
+          <div class="form-group"><label class="required">Business Analyst</label><select><option>Priya Shah</option><option>Kajal Patil</option></select></div>
+          <div class="form-group"><label class="required">Designer</label><select><option>Prerna Singh</option><option>Not Required</option></select></div>
+          <div class="form-group"><label class="required">Prototype Required</label><select><option>Yes</option><option>No</option></select></div>
+          <div class="form-group"><label class="required">Feature Document Required</label><select><option>Yes</option><option>No</option></select></div>
+          <div class="form-group"><label class="required">Deadline</label><input type="date" value="2026-08-03"></div>
+          <div class="form-group"><label>Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+          <div class="form-group full"><label class="required">Requirement Brief</label><textarea>Prepare a sample client-facing prototype and feature document explaining the proposed e-commerce solution for client validation before closing the opportunity.</textarea></div>
+          <div class="form-group full"><label>Reference Notes / Attachments</label><input type="file"></div>
+        </div>
+        <div class="alert" style="margin-top:12px">Saving this request creates pre-sales work for the selected BA and Designer in their My Tasks area, while the work remains linked to the Opportunity.</div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" data-save-close="Pre-sales request saved and tasks assigned">Save & Assign</button></div>
+    </div>
+  </div>
+
+  <!-- Pre-Sales Submission Modal -->
+  <div class="modal-backdrop" id="presalesSubmissionModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Submit Pre-Sales Deliverable</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label class="required">Deliverable Type</label><select id="presalesDeliverableType"><option>Sample Prototype</option><option>Feature / Solution Document</option></select></div>
+          <div class="form-group"><label class="required">Version</label><input value="v4"></div>
+          <div class="form-group"><label class="required">Submitted By</label><select><option>Prerna Singh</option><option>Priya Shah</option></select></div>
+          <div class="form-group"><label>Prototype / Document Link</label><input placeholder="https://"></div>
+          <div class="form-group full"><label>File Attachment</label><input type="file"></div>
+          <div class="form-group full"><label class="required">Submission Note</label><textarea placeholder="Describe the changes or content included in this version"></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" id="submitPresalesBtn">Submit for Sales Manager Review</button></div>
+    </div>
+  </div>
+
+  <!-- Client Feedback Modal -->
+  <div class="modal-backdrop" id="clientFeedbackModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Add Client Feedback</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Opportunity</label><input value="OPP-0053 · Nishiland Sports Pvt Ltd" readonly></div>
+          <div class="form-group"><label class="required">Feedback Date</label><input type="date" value="2026-08-07"></div>
+          <div class="form-group"><label class="required">Feedback On</label><select><option>Prototype + Feature Document</option><option>Prototype</option><option>Feature Document</option></select></div>
+          <div class="form-group"><label>Client Contact</label><input value="Mr. Nikhil Shah"></div>
+          <div class="form-group full"><label class="required">Client Feedback</label><textarea id="clientFeedbackText" placeholder="Enter client comments, requested changes or clarification"></textarea></div>
+          <div class="form-group"><label>Action Required</label><select><option>Rework Required</option><option>Clarification Only</option><option>No Changes</option></select></div>
+          <div class="form-group"><label>Assign Rework To</label><select><option>Business Analyst + Designer</option><option>Business Analyst</option><option>Designer</option></select></div>
+          <div class="form-group"><label>Rework Deadline</label><input type="date" value="2026-08-10"></div>
+          <div class="form-group"><label>Attachment</label><input type="file"></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" id="saveClientFeedbackBtn">Save Feedback & Assign Rework</button></div>
+    </div>
+  </div>
+
+  <!-- Client Confirmation Modal -->
+  <div class="modal-backdrop" id="clientConfirmationModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Client Confirmation</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Opportunity</label><input value="OPP-0053" readonly></div>
+          <div class="form-group"><label class="required">Confirmation Status</label><select id="clientConfirmationSelect"><option>Confirmed</option><option>Changes Required</option><option>Rejected / Not Proceeding</option></select></div>
+          <div class="form-group"><label class="required">Confirmation Date</label><input type="date" value="2026-08-07"></div>
+          <div class="form-group"><label class="required">Confirmed By</label><input value="Mr. Nikhil Shah"></div>
+          <div class="form-group"><label>Confirmation Method</label><select><option>Email Confirmation</option><option>Meeting</option><option>WhatsApp</option><option>Signed Document</option></select></div>
+          <div class="form-group"><label>Confirmation Attachment</label><input type="file"></div>
+          <div class="form-group full"><label class="required">Confirmation Note</label><textarea>Client confirmed the proposed prototype and feature document and approved the solution for formal project onboarding.</textarea></div>
+        </div>
+        <div class="alert" style="margin-top:12px">When status is Confirmed, the Opportunity can be marked Closed Won and becomes eligible for Convert to Project. All confirmed pre-sales information will be carried into the Project profile.</div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" id="confirmClientBtn">Save Confirmation</button></div>
+    </div>
+  </div>
+
+  <!-- Assignment Modal -->
+  <div class="modal-backdrop" id="assignmentModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Create Project Assignment</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Project ID</label><input value="PRJ-2026-0031" readonly></div>
+          <div class="form-group"><label class="required">Assignment Phase</label><select><option>Documentation</option><option>Design</option><option>UAT</option></select></div>
+          <div class="form-group full"><label class="required">Assignment Title</label><input value="Prepare Business Requirement Document"></div>
+          <div class="form-group"><label class="required">Assigned To</label><select><option>Priya Shah</option><option>Kajal Patil</option><option>Prerna Singh</option></select></div>
+          <div class="form-group"><label class="required">Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+          <div class="form-group"><label class="required">Start Date</label><input type="date" value="2026-08-04"></div>
+          <div class="form-group"><label class="required">Deadline</label><input type="date" value="2026-08-10"></div>
+          <div class="form-group full"><label class="required">Assignment Description</label><textarea>Gather requirements and prepare the Business Requirement Document for the complete e-commerce workflow.</textarea></div>
+          <div class="form-group"><label>Expected Document Type</label><select><option>Business Requirement Document</option><option>Functional Requirement Document</option><option>Process Flow</option></select></div>
+          <div class="form-group"><label>Approval Required</label><select><option>Yes</option><option>No</option></select></div>
+          <div class="form-group"><label>Approver</label><select><option>Management</option><option>Project Manager</option></select></div>
+          <div class="form-group"><label>Reference Attachment</label><input type="file"></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" data-save-close="Assignment created and sent to My Tasks">Create Assignment</button></div>
+    </div>
+  </div>
+
+  <!-- Delay Modal -->
+  <div class="modal-backdrop" id="delayModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Delay & Revised Deadline</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Original Deadline</label><input value="02 Aug 2026" readonly></div>
+          <div class="form-group"><label>Current Deadline</label><input value="07 Aug 2026" readonly></div>
+          <div class="form-group"><label>Delay Reason Category</label><input value="Additional work identified" readonly></div>
+          <div class="form-group"><label>Work Completed</label><input value="75%" readonly></div>
+          <div class="form-group full"><label>Detailed Delay Reason</label><textarea readonly>Inventory and dispatch workflow required additional clarification and was added after initial documentation review.</textarea></div>
+          <div class="form-group"><label>Requested New Deadline</label><input value="07 Aug 2026" readonly></div>
+          <div class="form-group"><label>Approved By</label><input value="Ayush Gunjal" readonly></div>
+          <div class="form-group full"><label>Approval Note</label><textarea>Approved due to valid additional scope clarification. No further extension without management approval.</textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Close</button><button class="btn">Update Deadline</button></div>
+    </div>
+  </div>
+
+  <!-- Approval Request Modal -->
+  <div class="modal-backdrop" id="approvalRequestModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Request Approval</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Project ID</label><input value="PRJ-2026-0031" readonly></div>
+          <div class="form-group"><label class="required">Approval Type</label><select><option>Documentation</option><option>Design</option><option>UAT</option><option>Closure</option></select></div>
+          <div class="form-group"><label class="required">Deliverable</label><select><option>Business Requirement Document</option></select></div>
+          <div class="form-group"><label class="required">Version</label><input value="v2"></div>
+          <div class="form-group"><label class="required">Approver</label><select><option>Management</option><option>Project Manager</option></select></div>
+          <div class="form-group"><label>Approval Due Date</label><input type="date" value="2026-08-05"></div>
+          <div class="form-group full"><label>Submission Note</label><textarea>Updated inventory and dispatch workflow has been included as requested.</textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" data-save-close="Approval request submitted">Send for Approval</button></div>
+    </div>
+  </div>
+
+  <!-- Review Approval Modal -->
+  <div class="modal-backdrop" id="reviewApprovalModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Review Approval</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group"><label>Project</label><input value="PRJ-2026-0031 · Nishiland E-commerce Website" readonly></div>
+          <div class="form-group"><label>Approval Type</label><input value="Documentation" readonly></div>
+          <div class="form-group full"><label>Deliverable</label><input id="approvalDeliverable" value="Business Requirement Document v2" readonly></div>
+          <div class="form-group"><label>Submitted By</label><input value="Priya Shah" readonly></div>
+          <div class="form-group"><label>Submitted Date</label><input value="04 Aug 2026" readonly></div>
+          <div class="form-group full"><label>Approver Comments</label><textarea id="approvalComments" placeholder="Enter approval, rejection or change comments"></textarea></div>
+        </div>
+        <div class="alert" style="margin-top:12px">Rejected or change-requested submissions remain in history. A rework assignment and new deadline can be created automatically.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn danger" data-save-close="Changes requested and rework task created">Request Changes</button>
+        <button class="btn secondary" data-save-close="Approval rejected">Reject</button>
+        <button class="btn" data-save-close="Deliverable approved">Approve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage Modal -->
+  <div class="modal-backdrop" id="stageModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Change Project Stage</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label>Current Stage</label><input value="Documentation" readonly></div>
+        <div class="form-group" style="margin-top:10px"><label class="required">Move To</label><select><option>Documentation Approval</option><option>Design</option><option>On Hold</option><option>Cancelled</option></select></div>
+        <div class="form-group" style="margin-top:10px"><label class="required">Reason / Stage Note</label><textarea placeholder="Stage change reason is required for audit history"></textarea></div>
+        <div class="alert" style="margin-top:12px">Stage gates will validate mandatory submissions and approvals. An authorised override requires a mandatory reason.</div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" data-save-close="Project stage updated">Change Stage</button></div>
+    </div>
+  </div>
+
+  <!-- UAT Issue Modal -->
+  <div class="modal-backdrop" id="uatIssueModal">
+    <div class="modal small-modal">
+      <div class="modal-header"><h2 class="modal-title">Add UAT Issue</h2><button class="close-btn" data-close>×</button></div>
+      <div class="modal-body">
+        <div class="form-grid two">
+          <div class="form-group full"><label class="required">Issue Title</label><input placeholder="Enter issue title"></div>
+          <div class="form-group"><label class="required">Severity</label><select><option>High</option><option>Medium</option><option>Low</option><option>Critical</option></select></div>
+          <div class="form-group"><label class="required">Assigned IT TL</label><select><option>Rohit Sharma</option></select></div>
+          <div class="form-group full"><label class="required">Issue Description</label><textarea></textarea></div>
+          <div class="form-group"><label>Expected Result</label><textarea></textarea></div>
+          <div class="form-group"><label>Actual Result</label><textarea></textarea></div>
+          <div class="form-group"><label>Attachment</label><input type="file"></div>
+          <div class="form-group"><label>Retest Required</label><select><option>Yes</option><option>No</option></select></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" data-close>Cancel</button><button class="btn" data-save-close="UAT issue added and sent to IT Team Lead">Add Issue</button></div>
+    </div>
+  </div>
+
+  <div class="success-toast" id="toast">Saved successfully</div>
+
+  <script>
+    const pages = document.querySelectorAll('.page');
+    const navItems = document.querySelectorAll('[data-page]');
+    const toast = document.getElementById('toast');
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),2200);
+    }
+
+    function showPage(id){
+      pages.forEach(p=>p.classList.toggle('active', p.id===id));
+      navItems.forEach(n=>n.classList.toggle('active', n.dataset.page===id));
+      window.scrollTo({top:0,behavior:'smooth'});
+      if(window.innerWidth<760) document.getElementById('sidebar').classList.remove('open');
+    }
+
+    navItems.forEach(item=>{
+      item.addEventListener('click',e=>{
+        e.preventDefault();
+        showPage(item.dataset.page);
+      });
+    });
+
+    document.querySelectorAll('[data-page-link]').forEach(btn=>{
+      btn.addEventListener('click',()=>showPage(btn.dataset.pageLink));
+    });
+
+    document.querySelectorAll('[data-project-open]').forEach(el=>{
+      el.addEventListener('click',()=>showPage('project-detail'));
+    });
+
+    document.querySelectorAll('[data-opportunity-open]').forEach(el=>{
+      el.addEventListener('click',()=>showPage('opportunity-detail'));
+    });
+
+    document.querySelectorAll('[data-toggle]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const target=document.getElementById(btn.dataset.toggle);
+        target.style.display = target.style.display==='none' ? 'block' : 'none';
+      });
+    });
+
+    document.getElementById('mobileMenu').addEventListener('click',()=>{
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    document.getElementById('collapseBtn').addEventListener('click',()=>{
+      const sidebar=document.getElementById('sidebar');
+      if(window.innerWidth<760) sidebar.classList.toggle('open');
+      else showToast('Sidebar collapse can be connected to your CRM layout.');
+    });
+
+    function openModal(id){
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(el){
+      const modal=el.closest('.modal-backdrop');
+      if(modal) modal.classList.remove('open');
+    }
+
+    document.querySelectorAll('[data-open]').forEach(btn=>{
+      btn.addEventListener('click',()=>openModal(btn.dataset.open));
+    });
+
+    document.querySelectorAll('[data-close]').forEach(btn=>{
+      btn.addEventListener('click',()=>closeModal(btn));
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop=>{
+      backdrop.addEventListener('click',e=>{
+        if(e.target===backdrop) backdrop.classList.remove('open');
+      });
+    });
+
+    document.querySelectorAll('[data-save-close]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        showToast(btn.dataset.saveClose);
+        closeModal(btn);
+      });
+    });
+
+    // Opportunity Profile tabs
+    document.querySelectorAll('#opportunityTabs .tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('#opportunityTabs .tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('#opportunity-detail .opp-tab-panel').forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.oppTab).classList.add('active');
+      });
+    });
+
+    // Project tabs
+    document.querySelectorAll('#projectTabs .tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('#projectTabs .tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('#project-detail .tab-panel').forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Create Project Wizard
+    const modal = document.getElementById('createProjectModal');
+    const sourceView = document.getElementById('projectSourceView');
+    const formView = document.getElementById('projectFormView');
+    const nextBtn = document.getElementById('nextProjectBtn');
+    const backBtn = document.getElementById('backProjectBtn');
+    const createBtn = document.getElementById('createProjectBtn');
+    const projectTypeInput = document.getElementById('projectType');
+    const createSubTitle = document.getElementById('createSubTitle');
+    let projectSource = '';
+    let currentStep = 1;
+
+    function resetWizard(){
+      projectSource='';
+      currentStep=1;
+      sourceView.style.display='block';
+      formView.style.display='none';
+      nextBtn.style.display='none';
+      backBtn.style.display='none';
+      createBtn.style.display='none';
+      createSubTitle.textContent='Choose how the project will be created.';
+      document.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('selected'));
+    }
+
+    document.querySelectorAll('[data-open="createProjectModal"]').forEach(btn=>{
+      btn.addEventListener('click',resetWizard);
+    });
+
+    function setSource(source){
+      projectSource=source;
+      sourceView.style.display='none';
+      formView.style.display='block';
+      nextBtn.style.display='inline-block';
+      backBtn.style.display='inline-block';
+      createBtn.style.display='none';
+      currentStep=1;
+      projectTypeInput.value = source==='external' ? 'External Project' : 'Internal Project';
+      createSubTitle.textContent = source==='external'
+        ? 'Convert a Closed Won Opportunity into an external project.'
+        : 'Create a manual internal project.';
+      document.querySelectorAll('.external-only').forEach(el=>el.style.display=source==='external'?'':'none');
+      document.querySelectorAll('.internal-only').forEach(el=>el.style.display=source==='internal'?'':'none');
+      document.getElementById('reviewType').textContent = source==='external'?'External':'Internal';
+      document.getElementById('newProjectName').value = source==='external' ? 'Nishiland E-commerce Website' : 'Internal CRM Enhancement';
+      updateStep();
+    }
+
+    document.querySelectorAll('.choice-card').forEach(card=>{
+      card.addEventListener('click',()=>setSource(card.dataset.source));
+    });
+
+    function updateStep(){
+      document.querySelectorAll('.form-step').forEach(step=>step.classList.toggle('active',Number(step.dataset.step)===currentStep));
+      document.querySelectorAll('[data-step-indicator]').forEach(ind=>{
+        const n=Number(ind.dataset.stepIndicator);
+        ind.classList.toggle('active',n===currentStep);
+        ind.classList.toggle('done',n<currentStep);
+      });
+      nextBtn.style.display = currentStep<5 ? 'inline-block' : 'none';
+      createBtn.style.display = currentStep===5 ? 'inline-block' : 'none';
+      backBtn.style.display='inline-block';
+      if(currentStep===5){
+        document.getElementById('reviewName').textContent=document.getElementById('newProjectName').value || 'Untitled Project';
+      }
+    }
+
+    nextBtn.addEventListener('click',()=>{
+      if(currentStep<5){currentStep++;updateStep();}
+    });
+
+    backBtn.addEventListener('click',()=>{
+      if(currentStep>1){currentStep--;updateStep();}
+      else resetWizard();
+    });
+
+    createBtn.addEventListener('click',()=>{
+      const name=document.getElementById('newProjectName').value || 'New Project';
+      const type=projectSource==='external'?'External':'Internal';
+      const client=projectSource==='external'?'Nishiland Sports Pvt Ltd':'IT Department';
+      const id='PRJ-2026-0033';
+      const row=document.createElement('tr');
+      row.innerHTML=`
+        <td><span class="link">${id}</span></td>
+        <td><strong>${name}</strong></td>
+        <td><span class="badge ${type==='External'?'blue':'dark'}">${type}</span></td>
+        <td>${client}</td>
+        <td>Ayush Gunjal</td>
+        <td><span class="badge yellow">Documentation</span></td>
+        <td>Priya Shah</td>
+        <td>04 Aug 2026</td>
+        <td>30 Sep 2026</td>
+        <td><div class="progress" style="width:90px"><span style="width:5%"></span></div></td>
+        <td><span class="badge green">On Track</span></td>
+        <td><button class="btn small">View</button></td>`;
+      row.querySelector('.link').addEventListener('click',()=>showPage('project-detail'));
+      row.querySelector('.btn').addEventListener('click',()=>showPage('project-detail'));
+      document.getElementById('projectsTableBody').prepend(row);
+      modal.classList.remove('open');
+
+      if(type==='External'){
+        const statusEl=document.getElementById('linkedProjectStatus');
+        const idEl=document.getElementById('linkedProjectId');
+        if(statusEl){ statusEl.textContent='Created'; statusEl.className='badge green'; }
+        if(idEl){ idEl.textContent=id; idEl.className='link'; }
+        document.querySelectorAll('#profileConvertBtn,#linkedConvertBtn').forEach(b=>{
+          b.textContent='View Project';
+          b.classList.add('secondary');
+          b.removeAttribute('data-convert-opportunity');
+          b.onclick=()=>showPage('project-detail');
+        });
+      }
+
+      showToast(`${id} created. Pre-sales information carried into Project profile and documentation assigned.`);
+      setTimeout(()=>showPage('project-detail'),500);
+    });
+
+    document.getElementById('quickInternalCreate').addEventListener('click',()=>{
+      resetWizard();
+      openModal('createProjectModal');
+      setSource('internal');
+    });
+
+    document.querySelectorAll('[data-convert-opportunity]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        resetWizard();
+        openModal('createProjectModal');
+        setSource('external');
+      });
+    });
+
+    // Approval review
+    document.querySelectorAll('[data-review-approval]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.getElementById('approvalDeliverable').value=btn.dataset.reviewApproval;
+        openModal('reviewApprovalModal');
+      });
+    });
+
+    document.getElementById('saveDevStatus').addEventListener('click',()=>{
+      const value=document.getElementById('devStatus').value;
+      showToast(`Development status updated: ${value}`);
+    });
+
+    document.getElementById('saveUat').addEventListener('click',()=>{
+      const value=document.getElementById('uatStatus').value;
+      showToast(`UAT status updated: ${value}`);
+    });
+
+
+    // Pre-Sales submission demo
+    const submitPresalesBtn=document.getElementById('submitPresalesBtn');
+    if(submitPresalesBtn){
+      submitPresalesBtn.addEventListener('click',()=>{
+        const type=document.getElementById('presalesDeliverableType').value;
+        const body=document.getElementById('presalesVersionsBody');
+        const row=document.createElement('tr');
+        row.innerHTML=`<td>${type}</td><td>${type.includes('Prototype')?'Prerna Singh':'Priya Shah'}</td><td>v4</td><td>Today</td><td><span class="badge yellow">Pending Review</span></td><td>Not Shared</td><td>No</td><td><button class="btn small secondary">Open</button></td>`;
+        body.prepend(row);
+        document.getElementById('presalesSubmissionModal').classList.remove('open');
+        showToast(`${type} submitted for Sales Manager review`);
+      });
+    }
+
+    const saveClientFeedbackBtn=document.getElementById('saveClientFeedbackBtn');
+    if(saveClientFeedbackBtn){
+      saveClientFeedbackBtn.addEventListener('click',()=>{
+        const text=(document.getElementById('clientFeedbackText').value || 'New client feedback recorded.');
+        const list=document.getElementById('clientFeedbackList');
+        const item=document.createElement('div');
+        item.className='timeline-entry';
+        item.innerHTML=`<div class="timeline-time">Today</div><div class="timeline-title">Client feedback recorded</div><div class="timeline-note">${text}</div>`;
+        list.prepend(item);
+        document.getElementById('clientFeedbackModal').classList.remove('open');
+        showToast('Client feedback saved and rework assigned');
+      });
+    }
+
+    const confirmClientBtn=document.getElementById('confirmClientBtn');
+    if(confirmClientBtn){
+      confirmClientBtn.addEventListener('click',()=>{
+        const status=document.getElementById('clientConfirmationSelect').value;
+        const badge=document.getElementById('clientConfirmationBadge');
+        const pStatus=document.getElementById('oppProfilePresales');
+        const tableStatus=document.getElementById('oppTablePresales');
+        const pStage=document.getElementById('oppProfileStage');
+        const tableStage=document.getElementById('oppTableStage');
+
+        if(status==='Confirmed'){
+          [badge,pStatus,tableStatus].forEach(el=>{
+            if(el){el.textContent='Confirmed';el.className='badge green';}
+          });
+          if(pStatus) pStatus.textContent='Client Confirmed';
+          if(tableStatus) tableStatus.textContent='Client Confirmed';
+          [pStage,tableStage].forEach(el=>{
+            if(el){el.textContent='Closed Won';el.className='badge green';}
+          });
+          showToast('Client confirmed. Opportunity is Closed Won and ready for project conversion.');
+        }else if(status==='Changes Required'){
+          [badge,pStatus,tableStatus].forEach(el=>{
+            if(el){el.textContent='Changes Required';el.className='badge yellow';}
+          });
+          [pStage,tableStage].forEach(el=>{
+            if(el){el.textContent='Prototype';el.className='badge yellow';}
+          });
+          showToast('Client changes recorded. Opportunity remains in pre-sales.');
+        }else{
+          [badge,pStatus,tableStatus].forEach(el=>{
+            if(el){el.textContent='Not Proceeding';el.className='badge red';}
+          });
+          [pStage,tableStage].forEach(el=>{
+            if(el){el.textContent='Lost / On Hold';el.className='badge red';}
+          });
+          showToast('Client decision recorded.');
+        }
+        document.getElementById('clientConfirmationModal').classList.remove('open');
+      });
+    }
+
+    // Escape closes open modal
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m=>m.classList.remove('open'));
+    });
+  </script>
+</body>
+</html>
